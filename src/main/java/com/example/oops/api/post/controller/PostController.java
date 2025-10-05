@@ -1,10 +1,9 @@
 package com.example.oops.api.post.controller;
 
 import com.example.oops.api.post.application.PostService;
-import com.example.oops.api.post.domain.Post;
 import com.example.oops.api.post.dto.PostRequestDto;
 import com.example.oops.cofig.security.provider.JwtTokenProvider;
-import com.example.oops.error.ApiResponseEntity;
+import com.example.oops.common.ApiResponseEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;

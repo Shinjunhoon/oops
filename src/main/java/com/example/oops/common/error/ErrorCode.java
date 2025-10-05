@@ -1,4 +1,4 @@
-package com.example.oops.error;
+package com.example.oops.common.error;
 
 
 import lombok.Getter;

@@ -1,6 +1,5 @@
-package com.example.oops.error;
+package com.example.oops.common.error;
 
-import jakarta.persistence.GeneratedValue;
 import lombok.Getter;
 
 @Getter

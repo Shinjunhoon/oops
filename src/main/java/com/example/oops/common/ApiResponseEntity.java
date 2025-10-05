@@ -1,8 +1,7 @@
-package com.example.oops.error;
+package com.example.oops.common;
 
 import lombok.Builder;
 import lombok.Getter;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 @Builder

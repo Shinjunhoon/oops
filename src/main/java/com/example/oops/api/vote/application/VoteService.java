@@ -8,6 +8,8 @@ import com.example.oops.api.user.repository.UserRepository;
 import com.example.oops.api.vote.domain.Vote;
 import com.example.oops.api.vote.domain.enums.VoteType;
 import com.example.oops.api.vote.repository.VoteRepository;
+import com.example.oops.common.error.ErrorCode;
+import com.example.oops.common.error.OopsException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,13 +29,13 @@ public class VoteService {
     @Transactional
     public String toggleVote(Long userId, Long postId, VoteType voteType) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(()-> new RuntimeException("게시글이 없쩌욤"));
+                .orElseThrow(()-> new OopsException(ErrorCode.POST_NOT_FOUND));
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("유저가 없쩌욤"));
+                .orElseThrow(() -> new OopsException(ErrorCode.USER_NOT_FOUND));
 
         if(post.getBoardType() != BoardType.DISCUSSION){
-            throw new IllegalArgumentException("투표계시판에서만 투표하시라구요");
+            throw new OopsException(ErrorCode.INVALID_VOTE_BOARD);
         }
 
         Optional<Vote> existingVote = voteRepository.findByUserAndPost(user,post);
