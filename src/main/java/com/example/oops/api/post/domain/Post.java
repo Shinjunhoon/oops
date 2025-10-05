@@ -2,6 +2,7 @@ package com.example.oops.api.post.domain;
 
 
 import com.example.oops.api.post.domain.enums.BoardType;
+import com.example.oops.api.post.dto.DiscussionResponseDto;
 import com.example.oops.api.user.domain.User;
 import com.example.oops.api.vote.domain.enums.VoteType;
 import jakarta.persistence.*;
@@ -14,7 +15,6 @@ import java.time.LocalDateTime;
 @Builder
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
@@ -64,5 +64,17 @@ public class Post {
     public void updateUpVoteCount(VoteType oldType,VoteType newType) {
         decreaseUpVoteCount(oldType);
         increaseUpVoteCount(newType);
+    }
+    public DiscussionResponseDto toResponseDto() {
+        return new DiscussionResponseDto(
+                this.id,
+                this.title,
+                this.content,
+                this.argument1,
+                this.argument2,
+                this.upVoteCount, // 가정: 엔티티에 직접 카운트 필드가 있다고 가정
+                this.downVoteCount,
+                this.createdAt
+        );
     }
 }
