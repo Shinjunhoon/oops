@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @Getter
-public class PostRequestDto {
+public class DiscussionRequestDto {
 
     @NotNull
     private String title;
@@ -17,4 +17,11 @@ public class PostRequestDto {
 
     @NotNull
     private BoardType boardType;
+
+    @NotNull
+    private String argument1;
+
+    @NotNull
+    private String argument2;
+
 }

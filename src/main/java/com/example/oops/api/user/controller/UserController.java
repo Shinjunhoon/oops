@@ -8,6 +8,7 @@ import com.example.oops.api.user.dto.SignRequestDto;
 import com.example.oops.api.user.repository.RefreshRequestDto;
 import com.example.oops.cofig.security.util.TokenInfo;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,8 +24,8 @@ public class UserController {
     private final LoginService loginService;
 
     @PostMapping("/sign")
-    public ResponseEntity<String> sign(@RequestBody SignRequestDto signRequestDto) {
-        signService.Sign(signRequestDto.getUsername(), signRequestDto.getPassword());
+    public ResponseEntity<String> sign(@RequestBody @Valid SignRequestDto signRequestDto) {
+        signService.Sign(signRequestDto);
         return ResponseEntity.ok().body("Success");
     }
 

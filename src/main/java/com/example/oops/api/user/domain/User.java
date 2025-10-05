@@ -1,8 +1,14 @@
 package com.example.oops.api.user.domain;
 
 
+import com.example.oops.api.user.domain.enums.Line;
+import com.example.oops.api.user.domain.value.LoginInfo;
+import com.example.oops.api.user.domain.value.UserInfo;
+import com.example.oops.api.user.dto.SignRequestDto;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,10 +18,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@SQLDelete(sql = "UPDATE user SET del_yn = true WHERE id = ?")
+@SQLRestriction("del_yn = false")
 @Entity
 @Table(name = "user")
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -25,24 +32,50 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
-    private String username;
+    @Embedded
+    private UserInfo userInfo;
 
-    @Column(nullable = false)
-    private String password;
+    @Embedded
+    private LoginInfo loginInfo;
+
+    @Column(name = "del_yn")
+    private boolean delYn = false;
 
 
-    // 별도 테이블 없이 DB에 저장 후 User 조회 할때 roles도 가져옴
-    // 나중에 role을 가져올때 null을 방지하기 위해 기본값을 @Builder.Default 어노테이션을 사용하여 방지해준다.
-    @ElementCollection(fetch=FetchType.EAGER)
-    @Builder.Default
-    private List<String> roles = new ArrayList<>();
+    public static User of(String encodedPassword,SignRequestDto signRequestDto) {
+
+        UserInfo userInfo1 = UserInfo.builder()
+                .line(signRequestDto.getLine())
+                .build();
+
+        LoginInfo loginInfo1 = LoginInfo.builder()
+                .username(signRequestDto.getUsername())
+                .password(encodedPassword) // ✨ 해싱된 비밀번호 사용
+                .roles(List.of("ROLE_USER")) // ✨ 기본 역할 부여
+                .build();
+
+        return User.builder()
+                .userInfo(userInfo1)
+                .loginInfo(loginInfo1)
+                .build();
+    }
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.roles.stream()
+        return this.loginInfo.getRoles().stream()
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public String getPassword() {
+        return this.loginInfo.getPassword();
+    }
+
+    @Override
+    public String getUsername() {
+        return this.loginInfo.getUsername();
     }
 
     @Override
@@ -52,5 +85,5 @@ public class User implements UserDetails {
     @Override
     public boolean isCredentialsNonExpired() { return true; }
     @Override
-    public boolean isEnabled() { return true; }
+    public boolean isEnabled() {  return !this.isDelYn();  }
 }

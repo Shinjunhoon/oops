@@ -17,7 +17,13 @@ public enum ErrorCode {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER-001", "인증된 사용자를 찾을 수 없습니다."),
 
     // 500 Internal Server Error (비상용)
-    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "SERVER-999", "서버 처리 중 예상치 못한 오류가 발생했습니다.");
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "SERVER-999", "서버 처리 중 예상치 못한 오류가 발생했습니다."),
+    DUPLICATE_USERNAME(HttpStatus.CONFLICT, "USER-002", "이미 존재하는 아이디입니다. 다른 아이디를 사용해주세요."),
+    REFRESH_TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "AUTH-001", "제공된 Refresh Token이 유효하지 않거나 위변조되었습니다."),
+    REFRESH_TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED, "AUTH-002", "유효한 Refresh Token 정보가 서버에 없습니다. 재로그인이 필요합니다."),
+    REFRESH_TOKEN_MISMATCH(HttpStatus.UNAUTHORIZED, "AUTH-003", "요청 토큰과 서버에 저장된 토큰이 일치하지 않습니다.");
+
+
     private final HttpStatus status;
     private final String code;
     private final String message;

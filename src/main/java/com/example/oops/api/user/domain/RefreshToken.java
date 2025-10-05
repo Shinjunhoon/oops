@@ -29,6 +29,4 @@ public class RefreshToken {
     @TimeToLive(unit = TimeUnit.MILLISECONDS)
     private Long expiryTime;
 
-
-
 }

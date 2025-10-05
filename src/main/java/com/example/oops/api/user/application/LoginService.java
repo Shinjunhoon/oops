@@ -7,6 +7,8 @@ import com.example.oops.api.user.repository.RefreshRequestDto;
 import com.example.oops.api.user.repository.RefreshTokenRepository;
 import com.example.oops.cofig.security.util.TokenInfo;
 import com.example.oops.cofig.security.provider.JwtTokenProvider;
+import com.example.oops.common.error.ErrorCode;
+import com.example.oops.common.error.OopsException;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -67,18 +69,18 @@ public class LoginService  {
     @Transactional
     public TokenInfo refreshToken(RefreshRequestDto refreshRequestDto) {
         if(!jwtTokenProvider.validateToken(refreshRequestDto.getRefreshToken())) {
-            throw new RuntimeException("Refresh Token이 유효하지 않습니다.");
+            throw new OopsException(ErrorCode.REFRESH_TOKEN_INVALID);
         }
 
         String userName = jwtTokenProvider.getUserPk(refreshRequestDto.getRefreshToken());
         RefreshToken redisToken = refreshTokenRepository.findById(userName)
-                .orElseThrow(() -> new RuntimeException("Refresh Token 정보가 Redis에 없습니다. (재로그인 필요)"));
+                .orElseThrow(() -> new OopsException(ErrorCode.REFRESH_TOKEN_NOT_FOUND));
 
         if(!redisToken.getToken().equals(refreshRequestDto.getRefreshToken())) {
-            throw new RuntimeException("저장된 RefreshToken과 일치하지 않습니다.");
+            throw new OopsException(ErrorCode.REFRESH_TOKEN_MISMATCH);
         }
 
-        List<String> roles = signService.findByUserName(userName).getRoles();
+        List<String> roles = signService.findByUserName(userName).getLoginInfo().getRoles();
         String newAccessToken = jwtTokenProvider.creatAccessToken(userName, roles);
 
           return TokenInfo.builder()
