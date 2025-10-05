@@ -1,4 +1,4 @@
-package com.example.oops.api.user.domain.repository;
+package com.example.oops.api.user.repository;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;

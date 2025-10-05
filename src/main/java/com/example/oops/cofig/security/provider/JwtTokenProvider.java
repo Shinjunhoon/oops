@@ -1,11 +1,14 @@
 package com.example.oops.cofig.security.provider;
 
-import com.example.oops.cofig.security.Dto.TokenInfo;
+import com.example.oops.api.user.domain.User;
+import com.example.oops.cofig.security.util.TokenInfo;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,12 +17,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 
-import javax.xml.crypto.Data;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 import java.util.List;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtTokenProvider {
@@ -56,8 +59,6 @@ public class JwtTokenProvider {
 
     public String creatAccessToken  (String userPk, List<String> roles){
         Claims claims = Jwts.claims().setSubject(userPk);
-
-
         claims.put("roles", roles);
         Date now = new Date();
 
@@ -65,6 +66,7 @@ public class JwtTokenProvider {
                 .setClaims(claims)
                 .setIssuedAt(now)
                 .setExpiration(new Date(now.getTime()+ accessTokenValidityInSeconds))
+                .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
 
@@ -82,6 +84,7 @@ public class JwtTokenProvider {
 
     public Authentication getAuthentication(String token){
         UserDetails userDetails = userDetailsService.loadUserByUsername(this.getUserPk(token));
+        log.info("userDetails: {}", userDetails);
         return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     }
     public String getUserPk(String token) {
@@ -102,21 +105,32 @@ public class JwtTokenProvider {
         return null;
     }
 
+    public long getLoginId(final Authentication authentication) throws AccessDeniedException {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new AccessDeniedException("로그인한 사용자만 접근할 수 있습니다.");
+        }
+
+        User user = (User) authentication.getPrincipal();
+        return user.getId();  // ✅ userId 반환
+    }
+
+
 
     public boolean validateToken(String jwtToken) {
         try {
             Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(jwtToken);
             return !claims.getBody().getExpiration().before(new Date());
         } catch (SecurityException | MalformedJwtException e) {
-            // 잘못된 JWT 서명
+            log.error("잘못된 JWT 서명: {}", e.getMessage());
         } catch (ExpiredJwtException e) {
-            // 만료된 JWT 토큰
-            return false; // 만료된 토큰은 무효
+            log.error("만료된 JWT 토큰: {}", e.getMessage());
+            return false;
         } catch (UnsupportedJwtException e) {
-            // 지원되지 않는 JWT 토큰
+            log.error("지원되지 않는 JWT 토큰: {}", e.getMessage());
         } catch (IllegalArgumentException e) {
-            // JWT 토큰이 잘못됨
+            log.error("잘못된 JWT 토큰: {}", e.getMessage());
         }
         return false;
     }
-    }
+
+}

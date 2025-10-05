@@ -1,18 +1,15 @@
-package com.example.oops.api.user.domain.controller;
+package com.example.oops.api.user.controller;
 
 
-import com.example.oops.api.user.domain.application.LoginService;
-import com.example.oops.api.user.domain.application.SignService;
-import com.example.oops.api.user.domain.dto.LoginRequestDto;
-import com.example.oops.api.user.domain.dto.SignRequestDto;
-import com.example.oops.api.user.domain.repository.RefreshRequestDto;
-import com.example.oops.api.user.domain.repository.RefreshTokenRepository;
-import com.example.oops.cofig.security.Dto.TokenInfo;
-import com.example.oops.cofig.security.provider.JwtTokenProvider;
+import com.example.oops.api.user.application.LoginService;
+import com.example.oops.api.user.application.SignService;
+import com.example.oops.api.user.dto.LoginRequestDto;
+import com.example.oops.api.user.dto.SignRequestDto;
+import com.example.oops.api.user.repository.RefreshRequestDto;
+import com.example.oops.cofig.security.util.TokenInfo;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;

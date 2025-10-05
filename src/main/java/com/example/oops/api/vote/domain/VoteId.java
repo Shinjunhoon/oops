@@ -1,5 +1,6 @@
-package com.example.oops.api.post.domain;
+package com.example.oops.api.vote.domain;
 
+import com.example.oops.api.post.domain.Post;
 import com.example.oops.api.user.domain.User;
 
 import java.io.Serializable;

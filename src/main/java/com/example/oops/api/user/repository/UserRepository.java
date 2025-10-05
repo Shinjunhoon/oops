@@ -1,4 +1,4 @@
-package com.example.oops.api.user.domain.repository;
+package com.example.oops.api.user.repository;
 
 import com.example.oops.api.user.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;

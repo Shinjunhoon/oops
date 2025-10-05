@@ -1,4 +1,4 @@
-package com.example.oops.api.user.domain.dto;
+package com.example.oops.api.user.dto;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;

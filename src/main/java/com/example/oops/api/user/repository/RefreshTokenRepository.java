@@ -1,4 +1,4 @@
-package com.example.oops.api.user.domain.repository;
+package com.example.oops.api.user.repository;
 
 import com.example.oops.api.user.domain.RefreshToken;
 import org.springframework.data.repository.CrudRepository;

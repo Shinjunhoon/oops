@@ -1,4 +1,4 @@
-package com.example.oops.cofig.security.Dto;
+package com.example.oops.cofig.security.util;
 
 
 import lombok.AllArgsConstructor;

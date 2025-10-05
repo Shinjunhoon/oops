@@ -1,4 +1,4 @@
-package com.example.oops.api.user.domain.application;
+package com.example.oops.api.user.application;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

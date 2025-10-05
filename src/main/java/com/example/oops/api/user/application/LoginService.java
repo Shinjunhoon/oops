@@ -1,13 +1,11 @@
-package com.example.oops.api.user.domain.application;
+package com.example.oops.api.user.application;
 
-import com.example.oops.CookieUtil;
+import com.example.oops.cofig.security.util.CookieUtil;
 import com.example.oops.api.user.domain.RefreshToken;
-import com.example.oops.api.user.domain.User;
-import com.example.oops.api.user.domain.dto.LoginRequestDto;
-import com.example.oops.api.user.domain.repository.RefreshRequestDto;
-import com.example.oops.api.user.domain.repository.RefreshTokenRepository;
-import com.example.oops.api.user.domain.repository.UserRepository;
-import com.example.oops.cofig.security.Dto.TokenInfo;
+import com.example.oops.api.user.dto.LoginRequestDto;
+import com.example.oops.api.user.repository.RefreshRequestDto;
+import com.example.oops.api.user.repository.RefreshTokenRepository;
+import com.example.oops.cofig.security.util.TokenInfo;
 import com.example.oops.cofig.security.provider.JwtTokenProvider;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
@@ -17,12 +15,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 

@@ -4,10 +4,6 @@ import com.example.oops.cofig.security.filtter.JwtFilter;
 import com.example.oops.cofig.security.handler.CustomAccessDeniedHandler;
 import com.example.oops.cofig.security.handler.CustomAuthenticationEntryPoint;
 import com.example.oops.cofig.security.provider.JwtTokenProvider;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,16 +12,9 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.filter.OncePerRequestFilter;
 
-import java.io.IOException;
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig  {
@@ -58,12 +47,9 @@ public class SecurityConfig  {
 
                 // URL별 권한 설정
                 .authorizeHttpRequests(auth -> auth
-                        // 로그인, 회원가입, 토큰 재발급은 모두 허용
                         .requestMatchers("/api/auth/login", "/api/auth/sign", "/api/auth/reissue"
                         ,"api/auth/refresh").permitAll()
-                        // admin 경로는 ADMIN 권한만 허용
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        // 나머지 모든 요청은 인증 필요
+
                         .anyRequest().authenticated()
                 )
 

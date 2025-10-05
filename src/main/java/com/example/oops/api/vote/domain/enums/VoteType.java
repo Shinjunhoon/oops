@@ -1,4 +1,4 @@
-package com.example.oops.api.post.domain.enums;
+package com.example.oops.api.vote.domain.enums;
 
 public enum VoteType {
     UP,
