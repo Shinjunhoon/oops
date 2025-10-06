@@ -18,4 +18,5 @@ public class DiscussionResponseDto {
     private int upVoteCount;
     private int downVoteCount;
     private LocalDateTime createdAt;
+    private boolean isAuthor;
 }

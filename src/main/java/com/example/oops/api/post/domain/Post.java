@@ -71,7 +71,7 @@ public class Post {
         decreaseUpVoteCount(oldType);
         increaseUpVoteCount(newType);
     }
-    public DiscussionResponseDto toResponseDto() {
+    public DiscussionResponseDto toResponseDto(boolean isAuthor) {
         return new DiscussionResponseDto(
                 this.id,
                 this.title,
@@ -80,7 +80,8 @@ public class Post {
                 this.argument2,
                 this.upVoteCount, // 가정: 엔티티에 직접 카운트 필드가 있다고 가정
                 this.downVoteCount,
-                this.createdAt
+                this.createdAt,
+                isAuthor
         );
     }
 }
