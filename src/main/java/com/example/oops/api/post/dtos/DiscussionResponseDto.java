@@ -1,4 +1,4 @@
-package com.example.oops.api.post.dto;
+package com.example.oops.api.post.dtos;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package com.example.oops.api.post.dto;
+package com.example.oops.api.post.dtos.badReportDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,12 +9,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class DiscussionListResponseDto {
-    // 제목,내용,생성일자추천수, 반대수
+public class BadReportResponseDto {
 
     private Long id;
     private String title;
-    private int upVoteCount;
-    private int downVoteCount;
+    private String content;
     private LocalDateTime createdAt;
 }

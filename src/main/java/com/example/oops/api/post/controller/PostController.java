@@ -1,11 +1,13 @@
 package com.example.oops.api.post.controller;
 
-import com.example.oops.api.post.application.impl.PostAddService;
-import com.example.oops.api.post.application.impl.PostGetService;
+import com.example.oops.api.post.application.discussionimpl.PostAddService;
+import com.example.oops.api.post.application.discussionimpl.PostDelService;
+import com.example.oops.api.post.application.discussionimpl.PostGetService;
 import com.example.oops.api.post.domain.enums.BoardType;
-import com.example.oops.api.post.dto.DiscussionRequestDto;
+import com.example.oops.api.post.dtos.discussionDto.DiscussionRequestDto;
 import com.example.oops.cofig.security.provider.JwtTokenProvider;
 import com.example.oops.common.ApiResponseEntity;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -20,11 +22,15 @@ import org.springframework.web.bind.annotation.*;
 public class PostController {
 
     private final PostAddService postService;
+
     private final PostGetService postGetService;
+
+    private final PostDelService postDelService;
+
     private final JwtTokenProvider jwtTokenProvider;
 
     @PostMapping("/post")
-    public ResponseEntity<ApiResponseEntity> createPost(@RequestBody DiscussionRequestDto discussionRequestDto, Authentication authentication) {
+    public ResponseEntity<ApiResponseEntity> createPost(@RequestBody @Valid DiscussionRequestDto discussionRequestDto, Authentication authentication) {
        return ApiResponseEntity.successResponseEntity(postService.savePost(jwtTokenProvider.getLoginId(authentication), discussionRequestDto));
     }
 
@@ -36,5 +42,10 @@ public class PostController {
     @GetMapping("/get/{boardType}/{postId}")
     public ResponseEntity<ApiResponseEntity> getDiscussion(@PathVariable BoardType boardType,@PathVariable Long postId) {
         return ApiResponseEntity.successResponseEntity(postGetService.getDiscussionPost(boardType,postId));
-}
+   }
+
+   @DeleteMapping("del/{postId}")
+    public ResponseEntity<ApiResponseEntity> deleteDiscussion(@PathVariable Long postId) {
+        return ApiResponseEntity.successResponseEntity(postDelService.deletePost(postId));
+   }
 }

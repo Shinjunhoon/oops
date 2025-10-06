@@ -89,8 +89,10 @@ public class JwtTokenProvider {
     }
     public String getUserPk(String token) {
         try {
-            return Jwts.parserBuilder().setSigningKey(key).build()
+            String userName =Jwts.parserBuilder().setSigningKey(key).build()
                     .parseClaimsJws(token).getBody().getSubject();
+            log.info("userName: {}", userName);
+            return userName;
         } catch (ExpiredJwtException e) {
             // 토큰이 만료되었더라도 subject(userPk)는 복호화 가능
             return e.getClaims().getSubject();

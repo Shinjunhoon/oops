@@ -21,7 +21,8 @@ public enum ErrorCode {
     DUPLICATE_USERNAME(HttpStatus.CONFLICT, "USER-002", "이미 존재하는 아이디입니다. 다른 아이디를 사용해주세요."),
     REFRESH_TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "AUTH-001", "제공된 Refresh Token이 유효하지 않거나 위변조되었습니다."),
     REFRESH_TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED, "AUTH-002", "유효한 Refresh Token 정보가 서버에 없습니다. 재로그인이 필요합니다."),
-    REFRESH_TOKEN_MISMATCH(HttpStatus.UNAUTHORIZED, "AUTH-003", "요청 토큰과 서버에 저장된 토큰이 일치하지 않습니다.");
+    REFRESH_TOKEN_MISMATCH(HttpStatus.UNAUTHORIZED, "AUTH-003", "요청 토큰과 서버에 저장된 토큰이 일치하지 않습니다."),
+    NO_AUTHORITY(HttpStatus.FORBIDDEN, "AUTH-403", "해당 작업을 수행할 권한이 없습니다."); // ✨ 추가된 코드
 
 
     private final HttpStatus status;

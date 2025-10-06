@@ -2,8 +2,9 @@ package com.example.oops.api.post.domain;
 
 
 import com.example.oops.api.post.domain.enums.BoardType;
-import com.example.oops.api.post.dto.DiscussionResponseDto;
+import com.example.oops.api.post.dtos.DiscussionResponseDto;
 import com.example.oops.api.user.domain.User;
+import com.example.oops.api.user.domain.enums.Line;
 import com.example.oops.api.vote.domain.enums.VoteType;
 import jakarta.persistence.*;
 import lombok.*;
@@ -41,6 +42,11 @@ public class Post {
     private int upVoteCount;
     private int downVoteCount;
 
+    @Enumerated(EnumType.STRING)
+    private Line line1;
+
+    @Enumerated(EnumType.STRING)
+    private Line line2;
     @CreatedDate
     private LocalDateTime createdAt;
 
