@@ -48,7 +48,7 @@ public class SecurityConfig  {
                 // URL별 권한 설정
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/login", "/api/auth/sign", "/api/auth/reissue"
-                        ,"api/auth/refresh","/api/post/get/**").permitAll()
+                        ,"api/auth/refresh","/api/post/get/**","/api/auth/email","/api/auth/emailVerify").permitAll()
                         .anyRequest().authenticated()
                 )
 
