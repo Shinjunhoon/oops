@@ -33,31 +33,11 @@ public class PostController {
 
     private final JwtTokenProvider jwtTokenProvider;
 
-    private final S3FileService s3FileService;
 
     @PostMapping("/post")
-    public ResponseEntity<ApiResponseEntity> createPost(@RequestBody @Valid DiscussionRequestDto discussionRequestDto, Authentication authentication) {
-       return ApiResponseEntity.successResponseEntity(postService.savePost(jwtTokenProvider.getLoginId(authentication), discussionRequestDto));
+    public ResponseEntity<ApiResponseEntity> createPost(@RequestPart("dto") @Valid DiscussionRequestDto discussionRequestDto,Authentication authentication,@RequestParam("file") MultipartFile file) throws IOException {
+       return ApiResponseEntity.successResponseEntity(postService.savePost(jwtTokenProvider.getLoginId(authentication), discussionRequestDto,file));
     }
-
-    @PostMapping("/test")
-    public ResponseEntity<String> test(@RequestParam("file") MultipartFile file) {
-        try {
-            // 3. 서비스 호출 및 업로드 실행
-            String s3Key = s3FileService.uploadVideoWithTransferManager(file);
-
-            // 4. 성공 응답 반환
-            return ResponseEntity.ok("동영상 업로드 성공. S3 Key: " + s3Key);
-
-        } catch (RuntimeException e) {
-            // S3 서비스 내부 오류 처리
-            return ResponseEntity.internalServerError().body("서버 오류: S3 업로드 실패 (" + e.getMessage() + ")");
-        } catch (IOException e) {
-            // 파일 스트림 처리 오류 (예: 서버에서 파일 읽기 실패)
-            return ResponseEntity.internalServerError().body("파일 처리 오류: " + e.getMessage());
-        }
-    }
-
 
     @GetMapping("/get/{boardType}")
     public ResponseEntity<ApiResponseEntity> getDiscussion(@PathVariable BoardType boardType,@PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {

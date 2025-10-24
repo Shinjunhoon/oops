@@ -50,6 +50,8 @@ public class Post {
     @CreatedDate
     private LocalDateTime createdAt;
 
+    private String imageUrl;
+
     public void increaseUpVoteCount(VoteType voteType) {
         if(voteType == VoteType.UP) {
             this.upVoteCount++;
