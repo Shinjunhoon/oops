@@ -34,6 +34,8 @@ public class S3FileService {
     private String cloudfrontDomain; // CloudFront 도메인 주입
 
     public String uploadVideoWithTransferManager(MultipartFile file) throws IOException {
+
+
         String originalFilename = file.getOriginalFilename();
         String key = "video/" + UUID.randomUUID().toString() + "_" + originalFilename;
 
