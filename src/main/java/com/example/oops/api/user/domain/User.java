@@ -45,6 +45,7 @@ public class User implements UserDetails {
     public static User of(String encodedPassword,SignRequestDto signRequestDto) {
 
         UserInfo userInfo1 = UserInfo.builder()
+                .nickname(signRequestDto.getNickname())
                 .line(signRequestDto.getLine())
                 .build();
 

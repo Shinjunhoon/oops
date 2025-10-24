@@ -23,5 +23,8 @@ public class SignRequestDto {
     @NotNull
     private Line line;
 
+    @NotNull
+    private String nickname;
+
 
 }

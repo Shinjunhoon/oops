@@ -13,6 +13,9 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED) // 👈 JPA 사용을 위해 protected 기본 생성자 추가
 @AllArgsConstructor
 public class UserInfo {
+
+    private String nickname;
+
     @Enumerated(EnumType.STRING)
     private Line line;
 

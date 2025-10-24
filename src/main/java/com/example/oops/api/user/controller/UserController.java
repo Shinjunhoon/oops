@@ -6,28 +6,35 @@ import com.example.oops.api.email.dto.EmailVerifyRequest;
 import com.example.oops.api.email.service.EmailService;
 import com.example.oops.api.user.application.LoginService;
 import com.example.oops.api.user.application.SignService;
+import com.example.oops.api.user.application.UserService;
 import com.example.oops.api.user.dto.LoginRequestDto;
 import com.example.oops.api.user.dto.SignRequestDto;
+import com.example.oops.api.user.dto.UserIdCheckRequestDto;
 import com.example.oops.api.user.repository.RefreshRequestDto;
+import com.example.oops.cofig.security.provider.JwtTokenProvider;
 import com.example.oops.cofig.security.util.TokenInfo;
+import com.example.oops.common.ApiResponseEntity;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class UserController {
     private final SignService signService;
+
     private final LoginService loginService;
 
     private final EmailService emailService;
+
+    private final UserService userService;
+
+    private final JwtTokenProvider jwtTokenProvider;
 
 
 
@@ -42,6 +49,16 @@ public class UserController {
     public ResponseEntity<Void> login(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
         loginService.login(loginRequestDto,response);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/checkUserName")
+    public ResponseEntity<ApiResponseEntity> checkUserName(@RequestBody @Valid UserIdCheckRequestDto userIdCheckRequestDto) {
+        return ApiResponseEntity.successResponseEntity(userService.checkUserId(userIdCheckRequestDto));
+    }
+
+    @GetMapping("/getUser")
+    public ResponseEntity<ApiResponseEntity> getUser(Authentication authentication) {
+        return ApiResponseEntity.successResponseEntity(userService.getUserInfo(jwtTokenProvider.getLoginId(authentication)));
     }
 
     @PostMapping("/email")
