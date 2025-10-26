@@ -76,8 +76,9 @@ public class UserController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<TokenInfo> refreshToken(@RequestBody RefreshRequestDto refreshRequestDto) {
-       return ResponseEntity.ok(loginService.refreshToken(refreshRequestDto));
+    public ResponseEntity<Void> refreshToken(@RequestBody RefreshRequestDto refreshRequestDto, HttpServletResponse response) {
+        loginService.refreshToken(refreshRequestDto,response);
+       return ResponseEntity.ok().build();
     }
 
 

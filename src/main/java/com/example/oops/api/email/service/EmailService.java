@@ -40,7 +40,6 @@ public class EmailService {
         return String.valueOf(code);
     }
 
-
     public String sendEmail(String email) throws MessagingException {
         if(redisUtil.existData(email)){
             redisUtil.deleteData(email);

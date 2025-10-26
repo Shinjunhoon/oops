@@ -61,18 +61,23 @@ public class LoginService  {
         );
 
         RefreshToken refreshToken = RefreshToken.builder()
+                .userName(username)
+                .token(tokenInfo.getRefreshToken())
                 .expiryTime(tokenInfo.getRefreshExpiresIn())
                 .build();
         refreshTokenRepository.save(refreshToken);
     }
 
     @Transactional
-    public TokenInfo refreshToken(RefreshRequestDto refreshRequestDto) {
-        if(!jwtTokenProvider.validateToken(refreshRequestDto.getRefreshToken())) {
+    public void refreshToken(RefreshRequestDto refreshRequestDto,HttpServletResponse response) {
+
+        String providerToken = refreshRequestDto.getRefreshToken();
+
+        if(!jwtTokenProvider.validateToken(providerToken)) {
             throw new OopsException(ErrorCode.REFRESH_TOKEN_INVALID);
         }
 
-        String userName = jwtTokenProvider.getUserPk(refreshRequestDto.getRefreshToken());
+        String userName = jwtTokenProvider.getUserPk(providerToken);
         RefreshToken redisToken = refreshTokenRepository.findById(userName)
                 .orElseThrow(() -> new OopsException(ErrorCode.REFRESH_TOKEN_NOT_FOUND));
 
@@ -80,15 +85,25 @@ public class LoginService  {
             throw new OopsException(ErrorCode.REFRESH_TOKEN_MISMATCH);
         }
 
-        List<String> roles = signService.findByUserName(userName).getLoginInfo().getRoles();
-        String newAccessToken = jwtTokenProvider.creatAccessToken(userName, roles);
+        refreshTokenRepository.deleteById(userName);
 
-          return TokenInfo.builder()
-                .grantType("Bearer")
-                .accessToken(newAccessToken)
-                .refreshToken(refreshRequestDto.getRefreshToken())
-                .refreshExpiresIn(redisToken.getExpiryTime())
-                .build();
+        List<String> roles = signService.findByUserName(userName).getLoginInfo().getRoles();
+        TokenInfo tokenInfo = jwtTokenProvider.createToken(userName, roles);
+
+        response.setHeader("Authorization", "Bearer " + tokenInfo.getAccessToken());
+        cookieUtil.addRefreshToken(
+                response,
+                tokenInfo.getRefreshToken(),
+                tokenInfo.getRefreshExpiresIn()/1000
+        );
+
+          RefreshToken refreshToken = RefreshToken.builder()
+                  .userName(userName)
+                  .token(tokenInfo.getRefreshToken())
+                  .expiryTime(tokenInfo.getRefreshExpiresIn())
+                  .build();
+
+          refreshTokenRepository.save(refreshToken);
     }
 
 }
