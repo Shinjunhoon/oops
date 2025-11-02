@@ -1,5 +1,6 @@
 package com.example.oops.api.post.application.discussionimpl;
 
+import com.example.oops.api.comment.CommentResponseDto;
 import com.example.oops.api.post.domain.Post;
 import com.example.oops.api.post.domain.enums.BoardType;
 import com.example.oops.api.post.dtos.discussionDto.DiscussionListResponseDto;
@@ -15,6 +16,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -33,17 +37,19 @@ public class PostGetService implements com.example.oops.api.post.application.Pos
     @Override
     public DiscussionResponseDto getDiscussionPost(BoardType boardType, Long postId) {
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long currentUserId = jwtTokenProvider.getLoginId(authentication);
-
         Post post = postRepository.findByBoardTypeAndId(boardType, postId)
                 .orElseThrow(() -> new OopsException(ErrorCode.POST_NOT_FOUND));
 
         log.info("postUserId:{}",post.getUser().getId());
-        log.info("currentUserId:{}",currentUserId);
 
-        boolean isAuthor = post.getUser().getId().equals(currentUserId);
+        DiscussionResponseDto responseDto = post.toResponseDto();
 
-        return post.toResponseDto(isAuthor);
+        List<CommentResponseDto> commentResponseDtos = post.getComments().stream()
+                .map(CommentResponseDto::of)
+                .toList();
+
+        responseDto.setComments(commentResponseDtos);
+
+        return responseDto;
     }
 }

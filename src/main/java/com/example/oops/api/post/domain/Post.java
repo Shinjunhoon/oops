@@ -1,7 +1,10 @@
 package com.example.oops.api.post.domain;
 
 
+import com.example.oops.api.comment.Comment;
 import com.example.oops.api.post.domain.enums.BoardType;
+import com.example.oops.api.post.domain.enums.Champion;
+import com.example.oops.api.post.domain.enums.Tier;
 import com.example.oops.api.post.dtos.DiscussionResponseDto;
 import com.example.oops.api.user.domain.User;
 import com.example.oops.api.user.domain.enums.Line;
@@ -12,6 +15,8 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Builder
 @Entity
@@ -35,6 +40,10 @@ public class Post {
     private String title;
     private String content;
 
+    @Enumerated(EnumType.STRING)
+    private Tier tier;
+
+
 
     private String argument1;
     private String argument2;
@@ -47,10 +56,22 @@ public class Post {
 
     @Enumerated(EnumType.STRING)
     private Line line2;
+
+
+    @Enumerated(EnumType.STRING)
+    private Champion champion1;
+
+    @Enumerated(EnumType.STRING)
+    private Champion champion2;
+
     @CreatedDate
     private LocalDateTime createdAt;
 
     private String imageUrl;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OrderBy("createAt DESC ")
+    private List<Comment> comments = new ArrayList<>();
 
     public void increaseUpVoteCount(VoteType voteType) {
         if(voteType == VoteType.UP) {
@@ -73,17 +94,21 @@ public class Post {
         decreaseUpVoteCount(oldType);
         increaseUpVoteCount(newType);
     }
-    public DiscussionResponseDto toResponseDto(boolean isAuthor) {
+    public DiscussionResponseDto toResponseDto() {
         return new DiscussionResponseDto(
                 this.id,
                 this.title,
-                this.content,
                 this.argument1,
                 this.argument2,
                 this.upVoteCount, // 가정: 엔티티에 직접 카운트 필드가 있다고 가정
                 this.downVoteCount,
                 this.createdAt,
-                isAuthor
+                this.imageUrl,
+                this.line1,
+                this.line2,
+                this.champion1,
+                this.champion2,
+                null
         );
     }
 }

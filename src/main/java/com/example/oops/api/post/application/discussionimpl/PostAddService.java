@@ -36,7 +36,6 @@ public class PostAddService implements com.example.oops.api.post.application.Pos
 
         Post post = Post.builder()
                 .title(discussionRequestDto.getTitle())
-                .content(discussionRequestDto.getContent())
                 .user(user)
                 .line1(discussionRequestDto.getLine1())
                 .line2(discussionRequestDto.getLine2())
@@ -44,6 +43,10 @@ public class PostAddService implements com.example.oops.api.post.application.Pos
                 .argument2(discussionRequestDto.getArgument2())
                 .boardType(discussionRequestDto.getBoardType())
                 .imageUrl(ImageUrl)
+                .champion1(discussionRequestDto.getChampion1())
+                .champion2(discussionRequestDto.getChampion2())
+                .title(discussionRequestDto.getTitle())
+                .tier(discussionRequestDto.getTier())
                 .build();
          postRepository.save(post);
         return post.getId();

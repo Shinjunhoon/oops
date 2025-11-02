@@ -16,7 +16,7 @@ public class VoteController {
     private final VoteService voteService;
     private final JwtTokenProvider jwtTokenProvider;
 
-    @PostMapping("/vote/{postId}")
+    @PostMapping("/{postId}")
     public ResponseEntity<String > votePost(@PathVariable Long postId, @RequestBody VoteType voteType, Authentication authentication) {
         return ResponseEntity.ok(voteService.toggleVote(jwtTokenProvider.getLoginId(authentication),postId,voteType));
     }

@@ -69,9 +69,9 @@ public class LoginService  {
     }
 
     @Transactional
-    public void refreshToken(RefreshRequestDto refreshRequestDto,HttpServletResponse response) {
+    public void refreshToken(String refreshToken,HttpServletResponse response) {
 
-        String providerToken = refreshRequestDto.getRefreshToken();
+        String providerToken = refreshToken;
 
         if(!jwtTokenProvider.validateToken(providerToken)) {
             throw new OopsException(ErrorCode.REFRESH_TOKEN_INVALID);
@@ -81,7 +81,7 @@ public class LoginService  {
         RefreshToken redisToken = refreshTokenRepository.findById(userName)
                 .orElseThrow(() -> new OopsException(ErrorCode.REFRESH_TOKEN_NOT_FOUND));
 
-        if(!redisToken.getToken().equals(refreshRequestDto.getRefreshToken())) {
+        if(!redisToken.getToken().equals(refreshToken)) {
             throw new OopsException(ErrorCode.REFRESH_TOKEN_MISMATCH);
         }
 
@@ -97,13 +97,13 @@ public class LoginService  {
                 tokenInfo.getRefreshExpiresIn()/1000
         );
 
-          RefreshToken refreshToken = RefreshToken.builder()
+          RefreshToken new_refreshToken = RefreshToken.builder()
                   .userName(userName)
                   .token(tokenInfo.getRefreshToken())
                   .expiryTime(tokenInfo.getRefreshExpiresIn())
                   .build();
 
-          refreshTokenRepository.save(refreshToken);
+          refreshTokenRepository.save(new_refreshToken);
     }
 
 }

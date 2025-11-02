@@ -1,5 +1,7 @@
 package com.example.oops.api.post.dtos.discussionDto;
 
+import com.example.oops.api.post.domain.enums.Champion;
+import com.example.oops.api.post.domain.enums.Tier;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,4 +19,7 @@ public class DiscussionListResponseDto {
     private int upVoteCount;
     private int downVoteCount;
     private LocalDateTime createdAt;
+    private Champion champion1;
+    private Champion champion2;
+    private Tier tier;
 }

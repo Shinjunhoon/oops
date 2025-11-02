@@ -22,6 +22,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import static com.example.oops.cofig.security.util.CookieUtil.REFRESH_TOKEN_COOKIE_NAME;
+
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -76,8 +78,8 @@ public class UserController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<Void> refreshToken(@RequestBody RefreshRequestDto refreshRequestDto, HttpServletResponse response) {
-        loginService.refreshToken(refreshRequestDto,response);
+    public ResponseEntity<Void> refreshToken(@CookieValue(name = REFRESH_TOKEN_COOKIE_NAME, required = true) String refreshToken, HttpServletResponse response) {
+        loginService.refreshToken(refreshToken,response);
        return ResponseEntity.ok().build();
     }
 

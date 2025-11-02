@@ -1,6 +1,8 @@
 package com.example.oops.api.post.dtos.discussionDto;
 
 import com.example.oops.api.post.domain.enums.BoardType;
+import com.example.oops.api.post.domain.enums.Champion;
+import com.example.oops.api.post.domain.enums.Tier;
 import com.example.oops.api.user.domain.enums.Line;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -12,9 +14,6 @@ public class DiscussionRequestDto {
 
     @NotNull
     private String title;
-
-    @NotNull
-    private String content;
 
     @NotNull
     private BoardType boardType;
@@ -31,4 +30,14 @@ public class DiscussionRequestDto {
     @NotNull
     private Line line2;
 
+
+    @NotNull
+    private Champion champion1;
+
+
+    @NotNull
+    private Champion champion2;
+
+    @NotNull
+    private Tier tier;
 }

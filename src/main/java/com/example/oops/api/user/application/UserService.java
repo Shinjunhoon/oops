@@ -20,7 +20,7 @@ public class UserService implements com.example.oops.api.user.application.impl.U
     @Override
     public UserInfoDto getUserInfo(Long userId) {
         User user = userRepository.findById(userId).orElse(null);
-        return new UserInfoDto(Objects.requireNonNull(user).getUserInfo());
+        return new UserInfoDto(Objects.requireNonNull(user).getUserInfo(),userId);
     }
 
     @Override

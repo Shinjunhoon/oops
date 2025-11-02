@@ -9,12 +9,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 public class UserInfoDto {
+    private Long id;
     String nickname;
     Line line;
 
 
-    public UserInfoDto(UserInfo userInfo) {
+    public UserInfoDto(UserInfo userInfo,Long id) {
         nickname = userInfo.getNickname();
         line = userInfo.getLine();
+        this.id = id;
     }
 }
