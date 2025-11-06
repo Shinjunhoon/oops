@@ -28,9 +28,9 @@ public class DiscussionResponseDto {
     private Line line2;
     private Champion champion1;
     private Champion champion2;
-
     List<CommentResponseDto> comments;
-
-
-
+    private Long userId;
+    private String userName;
+    private String koreanName1;
+    private String koreanName2;
 }

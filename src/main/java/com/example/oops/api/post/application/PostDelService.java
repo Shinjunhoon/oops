@@ -4,5 +4,5 @@ import com.example.oops.api.post.domain.Post;
 import org.springframework.security.core.Authentication;
 
 public interface PostDelService {
-    public abstract String deletePost(Long postId);
+    public abstract  String deletePost(Long postId,Long userId);
 }

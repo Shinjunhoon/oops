@@ -8,6 +8,7 @@ import com.example.oops.api.post.domain.enums.Tier;
 import com.example.oops.api.post.dtos.DiscussionResponseDto;
 import com.example.oops.api.user.domain.User;
 import com.example.oops.api.user.domain.enums.Line;
+import com.example.oops.api.vote.domain.Vote;
 import com.example.oops.api.vote.domain.enums.VoteType;
 import jakarta.persistence.*;
 import lombok.*;
@@ -57,6 +58,8 @@ public class Post {
     @Enumerated(EnumType.STRING)
     private Line line2;
 
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Vote> votes = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     private Champion champion1;
@@ -108,7 +111,11 @@ public class Post {
                 this.line2,
                 this.champion1,
                 this.champion2,
-                null
+                null,
+                this.user.getId(),
+                this.user.getUserInfo().getNickname(),
+                this.champion1.getKoreanName(),
+                this.champion2.getKoreanName()
         );
     }
 }

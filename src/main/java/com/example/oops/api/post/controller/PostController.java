@@ -50,7 +50,7 @@ public class PostController {
    }
 
    @DeleteMapping("del/{postId}")
-    public ResponseEntity<ApiResponseEntity> deleteDiscussion(@PathVariable Long postId) {
-        return ApiResponseEntity.successResponseEntity(postDelService.deletePost(postId));
+    public ResponseEntity<ApiResponseEntity> deleteDiscussion(@PathVariable Long postId,Authentication authentication) {
+        return ApiResponseEntity.successResponseEntity(postDelService.deletePost(postId,jwtTokenProvider.getLoginId(authentication)));
    }
 }

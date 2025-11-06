@@ -10,6 +10,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
+
 @RequiredArgsConstructor
 @Service
 public class PostDelService implements com.example.oops.api.post.application.PostDelService {
@@ -17,17 +19,13 @@ public class PostDelService implements com.example.oops.api.post.application.Pos
     private final PostRepository postRepository;
 
     @Override
-    public String deletePost(Long postId) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    public String deletePost(Long postId,Long userId) {
 
-        // 2. JwtTokenProvider를 통해 현재 로그인된 사용자의 ID(PK)를 얻습니다.
-        //    (토큰 프로바이더 내부에서 인증되지 않은 사용자는 예외 처리됨)
-        long currentUserId = jwtTokenProvider.getLoginId(authentication); // ✨ 이 메서드를 활용합니다.
 
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new OopsException(ErrorCode.POST_NOT_FOUND));
 
-        if (post.getUser().getId() != currentUserId) {
+        if (!Objects.equals(post.getUser().getId(), userId)) {
             throw new OopsException(ErrorCode.NO_AUTHORITY);
         }
 

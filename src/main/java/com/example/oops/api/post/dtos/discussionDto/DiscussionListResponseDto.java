@@ -5,10 +5,11 @@ import com.example.oops.api.post.domain.enums.Tier;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-@AllArgsConstructor
+@Setter
 @NoArgsConstructor
 @Getter
 public class DiscussionListResponseDto {
@@ -22,4 +23,28 @@ public class DiscussionListResponseDto {
     private Champion champion1;
     private Champion champion2;
     private Tier tier;
+    private String koreanName1;
+    private String koreanName2;
+
+    public DiscussionListResponseDto(
+            Long id,
+            String title,
+            int upVoteCount,
+            int downVoteCount,
+            LocalDateTime createdAt,
+            Champion champion1,
+            Champion champion2,
+            Tier tier)
+    {
+        this.id = id;
+        this.title = title;
+        this.upVoteCount = upVoteCount;
+        this.downVoteCount = downVoteCount;
+        this.createdAt = createdAt;
+        this.champion1 = champion1;
+        this.champion2 = champion2;
+        this.tier = tier;
+
+        // koreanName1, koreanName2는 JPQL에서 채우지 않으므로 여기서 설정하지 않습니다.
+    }
 }

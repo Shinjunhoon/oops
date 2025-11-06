@@ -29,7 +29,7 @@ public class CommentController {
         return ApiResponseEntity.successResponseEntity(commentService.updateComment(commentUpdateRequestDto,jwtTokenProvider.getLoginId(auth)));
     }
 
-    @DeleteMapping
+    @DeleteMapping("/deleteComment")
     public ResponseEntity<ApiResponseEntity> deleteComment(@RequestBody CommentDeleteRequestDto commentDeleteRequestDto,  Authentication auth) {
         return ApiResponseEntity.successResponseEntity(commentService.deleteComment(commentDeleteRequestDto,jwtTokenProvider.getLoginId(auth)));
     }

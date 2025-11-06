@@ -31,9 +31,21 @@ public class PostGetService implements com.example.oops.api.post.application.Pos
 
     @Override
     public Page<DiscussionListResponseDto> getDiscussionList(BoardType boardType, Pageable pageable) {
-        return postRepository.findByBoardType(boardType,pageable);
-    }
+        Page<DiscussionListResponseDto> discussionPage = postRepository.findByBoardType(boardType, pageable);
 
+        // 2. 💡 DTO 목록을 순회하며 한글 이름을 설정합니다. (Service 계층 책임)
+        discussionPage.getContent().forEach(dto -> {
+            // DiscussionListResponseDto의 setKoreanNames() 메서드 사용 (혹은 직접 Setter 호출)
+            if (dto.getChampion1() != null) {
+                dto.setKoreanName1(dto.getChampion1().getKoreanName());
+            }
+            if (dto.getChampion2() != null) {
+                dto.setKoreanName2(dto.getChampion2().getKoreanName());
+            }
+        });
+
+        return discussionPage;
+    }
     @Override
     public DiscussionResponseDto getDiscussionPost(BoardType boardType, Long postId) {
 
