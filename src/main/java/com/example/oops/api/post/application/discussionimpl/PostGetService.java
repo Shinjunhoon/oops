@@ -27,8 +27,6 @@ public class PostGetService implements com.example.oops.api.post.application.Pos
 
     private final PostRepository postRepository;
 
-    private final JwtTokenProvider jwtTokenProvider;
-
     @Override
     public Page<DiscussionListResponseDto> getDiscussionList(BoardType boardType, Pageable pageable) {
         Page<DiscussionListResponseDto> discussionPage = postRepository.findByBoardType(boardType, pageable);
@@ -43,16 +41,16 @@ public class PostGetService implements com.example.oops.api.post.application.Pos
                 dto.setKoreanName2(dto.getChampion2().getKoreanName());
             }
         });
-
         return discussionPage;
     }
+
     @Override
     public DiscussionResponseDto getDiscussionPost(BoardType boardType, Long postId) {
 
         Post post = postRepository.findByBoardTypeAndId(boardType, postId)
                 .orElseThrow(() -> new OopsException(ErrorCode.POST_NOT_FOUND));
 
-        log.info("postUserId:{}",post.getUser().getId());
+        log.info("postUserId:{}", post.getUser().getId());
 
         DiscussionResponseDto responseDto = post.toResponseDto();
 
@@ -63,5 +61,22 @@ public class PostGetService implements com.example.oops.api.post.application.Pos
         responseDto.setComments(commentResponseDtos);
 
         return responseDto;
+    }
+
+    @Override
+    public Page<DiscussionListResponseDto> getDiscussionPostVoteDES(BoardType boardType, Pageable pageable) {
+
+        Page<DiscussionListResponseDto> discussionPage = postRepository.findByBoardTypeOrderByTotalVotesDesc(boardType, pageable);
+
+        discussionPage.getContent().forEach(dto -> {
+            // DiscussionListResponseDto의 setKoreanNames() 메서드 사용 (혹은 직접 Setter 호출)
+            if (dto.getChampion1() != null) {
+                dto.setKoreanName1(dto.getChampion1().getKoreanName());
+            }
+            if (dto.getChampion2() != null) {
+                dto.setKoreanName2(dto.getChampion2().getKoreanName());
+            }
+        });
+        return discussionPage;
     }
 }

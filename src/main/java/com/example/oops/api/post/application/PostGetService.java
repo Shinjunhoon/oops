@@ -9,6 +9,6 @@ import org.springframework.data.domain.Pageable;
 public interface PostGetService {
     public abstract Page<DiscussionListResponseDto> getDiscussionList(BoardType boardType, Pageable pageable);
     public abstract DiscussionResponseDto getDiscussionPost(BoardType boardType, Long postId);
-
+    public abstract Page<DiscussionListResponseDto> getDiscussionPostVoteDES(BoardType boardType, Pageable pageable);
 
 }

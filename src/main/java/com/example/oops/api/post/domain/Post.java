@@ -38,6 +38,7 @@ public class Post {
     @Enumerated(EnumType.STRING)
     private BoardType boardType;
 
+    @Column(length = 500)
     private String title;
     private String content;
 
@@ -45,8 +46,10 @@ public class Post {
     private Tier tier;
 
 
-
+    @Column(length = 500)
     private String argument1;
+
+    @Column(length = 500)
     private String argument2;
     //토론 필드 영역
     private int upVoteCount;

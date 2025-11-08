@@ -25,7 +25,14 @@ public class PostDelService implements com.example.oops.api.post.application.Pos
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new OopsException(ErrorCode.POST_NOT_FOUND));
 
-        if (!Objects.equals(post.getUser().getId(), userId)) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        boolean isAdmin = authentication != null && authentication.getAuthorities().stream()
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
+
+        boolean isOwner = Objects.equals(post.getUser().getId(), userId);
+
+        if (!isOwner && !isAdmin) {
             throw new OopsException(ErrorCode.NO_AUTHORITY);
         }
 

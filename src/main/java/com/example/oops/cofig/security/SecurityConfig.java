@@ -68,6 +68,9 @@ public class SecurityConfig  {
                         .requestMatchers("/api/auth/login", "/api/auth/sign", "/api/auth/reissue"
                         ,"api/auth/refresh","/api/post/get/**","/api/auth/email","/api/auth/emailVerify","api/auth/checkUserName"
                         ,"/api/post/test","/api/post/get/","/api/post/get/**","/api/comment/createComment").permitAll()
+
+                        .requestMatchers("/api/admin/users/count","/api/admin/getReport","/api/admin/posts/").hasRole("ADMIN")
+
                         .anyRequest().authenticated()
                 )
 

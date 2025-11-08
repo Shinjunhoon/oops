@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
@@ -19,6 +20,12 @@ public interface PostRepository extends JpaRepository<Post, Long> {
      Page<DiscussionListResponseDto> findByBoardType(BoardType boardType, Pageable pageable);
 
     Optional<Post> findByBoardTypeAndId(BoardType boardType, Long id);
+
+    @Query("SELECT new com.example.oops.api.post.dtos.discussionDto.DiscussionListResponseDto(" +
+            "p.id, p.title, p.upVoteCount, p.downVoteCount, p.createdAt, p.champion1, p.champion2, p.tier) " +
+            "FROM Post p WHERE p.boardType = :boardType " +
+            "ORDER BY (p.upVoteCount + p.downVoteCount) DESC")
+    Page<DiscussionListResponseDto> findByBoardTypeOrderByTotalVotesDesc(@Param("boardType") BoardType boardType, Pageable pageable);
 
 
 }

@@ -11,6 +11,10 @@ public enum ErrorCode {
 
     // 400 Bad Request
     INVALID_VOTE_BOARD(HttpStatus.BAD_REQUEST, "VOTE-001", "투표는 토론 게시판에서만 가능합니다."),
+    REPORT_OWN_POST_FORBIDDEN(HttpStatus.FORBIDDEN, "R403", "본인이 작성한 게시물은 신고할 수 없습니다."),
+    REPORT_REASON_TOO_SHORT(HttpStatus.BAD_REQUEST, "R001", "신고 상세 내용은 최소 10자 이상 입력해야 합니다."),
+    DUPLICATE_REPORT(HttpStatus.CONFLICT, "R409", "이미 해당 게시물을 신고했습니다. (중복 신고 불가)"),
+    INVALID_REPORT_TYPE(HttpStatus.BAD_REQUEST, "R002", "유효하지 않은 신고 유형입니다."),
 
     // 404 Not Found
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "POST-001", "요청된 게시글을 찾을 수 없습니다."),

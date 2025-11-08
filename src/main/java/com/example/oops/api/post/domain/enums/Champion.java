@@ -10,6 +10,7 @@ public enum Champion {
     // 챔피언 목록 (영문 이름과 한글 이름을 값으로 가짐)
 
     // A
+    // A
     AATROX("Aatrox", "아트록스"),
     AHRI("Ahri", "아리"),
     AKALI("Akali", "아칼리"),
@@ -20,7 +21,7 @@ public enum Champion {
     ANNIE("Annie", "애니"),
     APHELIOS("Aphelios", "아펠리오스"),
     ASHE("Ashe", "애쉬"),
-    AURELION_SOL("Aurelion Sol", "아우렐리온 솔"),
+    AURELIONSOL("Aurelion Sol", "아우렐리온 솔"), // 변경: AURELION_SOL -> AURELIONSOL
     AZIR("Azir", "아지르"),
 
     // B
@@ -29,7 +30,7 @@ public enum Champion {
     BLITZCRANK("Blitzcrank", "블리츠크랭크"),
     BRAND("Brand", "브랜드"),
     BRAUM("Braum", "브라움"),
-    BRIAR("Briar", "브라이어"), // 최신 챔피언
+    BLIAR("Briar", "브라이어"), // 변경: BRIAR -> BLIAR (클라이언트 value 기준)
 
     // C
     CAITLYN("Caitlyn", "케이틀린"),
@@ -41,7 +42,7 @@ public enum Champion {
     // D
     DARIUS("Darius", "다리우스"),
     DIANA("Diana", "다이애나"),
-    DR_MUNDO("Dr. Mundo", "문도 박사"),
+    DRMUNDO("Dr. Mundo", "문도 박사"), // 변경: DR_MUNDO -> DRMUNDO
     DRAVEN("Draven", "드레이븐"),
 
     // E
@@ -71,11 +72,11 @@ public enum Champion {
     // I
     ILLAOI("Illaoi", "일라오이"),
     IRELIA("Irelia", "이렐리아"),
-    IVERSON("Ivern", "아이번"),
+    IVERN("Ivern", "아이번"), // 변경: IVERSON -> IVERN (클라이언트 value 기준)
 
     // J
     JANNA("Janna", "잔나"),
-    JARVAN_IV("Jarvan IV", "자르반 4세"),
+    JARVANIV("Jarvan IV", "자르반 4세"), // 변경: JARVAN_IV -> JARVANIV
     JAX("Jax", "잭스"),
     JAYCE("Jayce", "제이스"),
     JHIN("Jhin", "진"),
@@ -95,11 +96,11 @@ public enum Champion {
     KINDRED("Kindred", "킨드레드"),
     KLED("Kled", "클레드"),
     KOGMAW("Kog'Maw", "코그모"),
-    K_SANTE("K'Sante", "크산테"), // 최신 챔피언
+    KSANTE("K'Sante", "크산테"), // 변경: K_SANTE -> KSANTE
 
     // L
     LEBLANC("LeBlanc", "르블랑"),
-    LEE_SIN("Lee Sin", "리 신"),
+    LEESIN("Lee Sin", "리 신"), // 변경: LEE_SIN -> LEESIN
     LEONA("Leona", "레오나"),
     LILLIA("Lillia", "릴리아"),
     LISSANDRA("Lissandra", "리산드라"),
@@ -111,14 +112,14 @@ public enum Champion {
     MALPHITE("Malphite", "말파이트"),
     MALZAHAR("Malzahar", "말자하"),
     MAOKAI("Maokai", "마오카이"),
-    MASTER_YI("Master Yi", "마스터 이"),
-    MILIO("Milio", "밀리오"), // 최신 챔피언
-    MISS_FORTUNE("Miss Fortune", "미스 포츈"),
+    MASTERYI("Master Yi", "마스터 이"), // 변경: MASTER_YI -> MASTERYI
+    MILIO("Milio", "밀리오"),
+    MISSFORTUNE("Miss Fortune", "미스 포츈"), // 변경: MISS_FORTUNE -> MISSFORTUNE
     MORDEKAISER("Mordekaiser", "모데카이저"),
     MORGANA("Morgana", "모르가나"),
 
     // N
-    NAAFIRI("Naafiri", "나피리"), // 최신 챔피언
+    NAFIRI("Naafiri", "나피리"), // 변경: NAAFIIRI -> NAFIRI (클라이언트 value 기준)
     NAMI("Nami", "나미"),
     NASUS("Nasus", "나서스"),
     NAUTILUS("Nautilus", "노틸러스"),
@@ -126,7 +127,7 @@ public enum Champion {
     NIDALEE("Nidalee", "니달리"),
     NILAH("Nilah", "닐라"),
     NOCTURNE("Nocturne", "녹턴"),
-    NUNU_WILLUMP("Nunu & Willump", "누누와 윌럼프"),
+    NUNU("Nunu & Willump", "누누와 윌럼프"), // 변경: NUNU_WILLUMP -> NUNU
 
     // O
     OLAF("Olaf", "올라프"),
@@ -135,18 +136,19 @@ public enum Champion {
 
     // P
     PANTHEON("Pantheon", "판테온"),
-    POPULAR("Poppy", "뽀삐"),
+    POPPY("Poppy", "뽀삐"), // 변경: POPULAR -> POPPY (클라이언트 value 기준)
     PYKE("Pyke", "파이크"),
 
     // Q
     QUINN("Quinn", "퀸"),
+    QIYANA("Qiyana", "키아나"), // 클라이언트에만 있는 챔피언 추가
 
     // R
     RAKAN("Rakan", "라칸"),
     RAMMUS("Rammus", "람머스"),
     REKSAI("Rek'Sai", "렉사이"),
     RELL("Rell", "렐"),
-    RENATA_GLASC("Renata Glasc", "레나타 글라스크"),
+    RENATA("Renata Glasc", "레나타 글라스크"), // 변경: RENATA_GLASC -> RENATA
     RENEKTON("Renekton", "레넥톤"),
     RENGAR("Rengar", "렝가"),
     RIVEN("Riven", "리븐"),
@@ -159,13 +161,14 @@ public enum Champion {
     SENNA("Senna", "세나"),
     SERAPHINE("Seraphine", "세라핀"),
     SETT("Sett", "세트"),
-    SHACO("Shaco", "샤코"),
+    SHACO("Shaco", "샤코"), // 변경: SHAC -> SHACO (클라이언트 value 기준)
     SHEN("Shen", "쉔"),
     SHYVANA("Shyvana", "쉬바나"),
     SINGED("Singed", "신지드"),
     SION("Sion", "사이온"),
     SIVIR("Sivir", "시비르"),
     SKARNER("Skarner", "스카너"),
+    SMOLDER("Smolder", "스몰더"), // 클라이언트에만 있는 챔피언 추가
     SONA("Sona", "소나"),
     SORAKA("Soraka", "소라카"),
     SWAIN("Swain", "스웨인"),
@@ -173,7 +176,7 @@ public enum Champion {
     SYNDRA("Syndra", "신드라"),
 
     // T
-    TAHM_KENCH("Tahm Kench", "탐 켄치"),
+    TAHMKENCH("Tahm Kench", "탐 켄치"), // 변경: TAHM_KENCH -> TAHMKENCH
     TALIYAH("Taliyah", "탈리야"),
     TALON("Talon", "탈론"),
     TARIC("Taric", "타릭"),
@@ -182,7 +185,7 @@ public enum Champion {
     TRISTANA("Tristana", "트리스타나"),
     TRUNDLE("Trundle", "트런들"),
     TRYNDAMERE("Tryndamere", "트린다미어"),
-    TWISTED_FATE("Twisted Fate", "트위스티드 페이트"),
+    TWISTEDFATE("Twisted Fate", "트위스티드 페이트"), // 변경: TWISTED_FATE -> TWISTEDFATE
     TWITCH("Twitch", "트위치"),
 
     // U
@@ -193,7 +196,7 @@ public enum Champion {
     VARUS("Varus", "바루스"),
     VAYNE("Vayne", "베인"),
     VEIGAR("Veigar", "베이가"),
-    VELKOZ("Vel'Koz", "벨코즈"),
+    VELKOZ("Vel'Koz", "벨코즈"), // 변경: VELKOZ("Vel'Koz", "벨코즈") - 이름은 같으나 클라이언트 value 형식에 맞게 정의 유지
     VEX("Vex", "벡스"),
     VI("Vi", "바이"),
     VIEGO("Viego", "비에고"),
@@ -208,7 +211,7 @@ public enum Champion {
     // X
     XAYAH("Xayah", "자야"),
     XERATH("Xerath", "제라스"),
-    XIN_ZHAO("Xin Zhao", "신 짜오"),
+    XINZHAO("Xin Zhao", "신 짜오"), // 변경: XIN_ZHAO -> XINZHAO
 
     // Y
     YASUO("Yasuo", "야스오"),
@@ -223,7 +226,10 @@ public enum Champion {
     ZIGGS("Ziggs", "직스"),
     ZILEAN("Zilean", "질리언"),
     ZOE("Zoe", "조이"),
-    ZYRA("Zyra", "자이라");
+    ZYRA("Zyra", "자이라"),
+
+    // 클라이언트에만 존재하고 백엔드 Enum에 없던 챔피언 (참고용)
+    AURORA("Aurora", "오로라");
 
 
     // 챔피언의 실제 영문 이름을 저장할 필드

@@ -44,13 +44,19 @@ public class PostController {
         return ApiResponseEntity.successResponseEntity(postGetService.getDiscussionList(boardType,pageable));
     }
 
+
+    @GetMapping("/get/{boardType}/des")
+    public ResponseEntity<ApiResponseEntity> getDiscussionDes(@PathVariable BoardType boardType,@PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        return ApiResponseEntity.successResponseEntity(postGetService.getDiscussionPostVoteDES(boardType,pageable));
+    }
+
     @GetMapping("/get/{boardType}/{postId}")
     public ResponseEntity<ApiResponseEntity> getDiscussion(@PathVariable BoardType boardType,@PathVariable Long postId) {
         return ApiResponseEntity.successResponseEntity(postGetService.getDiscussionPost(boardType,postId));
    }
 
-   @DeleteMapping("del/{postId}")
-    public ResponseEntity<ApiResponseEntity> deleteDiscussion(@PathVariable Long postId,Authentication authentication) {
-        return ApiResponseEntity.successResponseEntity(postDelService.deletePost(postId,jwtTokenProvider.getLoginId(authentication)));
-   }
+    @DeleteMapping("del/{postId}")
+    public ResponseEntity<ApiResponseEntity> deleteDiscussion(@PathVariable Long postId, Authentication authentication) {
+        return ApiResponseEntity.successResponseEntity(postDelService.deletePost(postId, jwtTokenProvider.getLoginId(authentication)));
+    }
 }
