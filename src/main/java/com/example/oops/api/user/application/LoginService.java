@@ -1,5 +1,6 @@
 package com.example.oops.api.user.application;
 
+import com.example.oops.api.user.repository.AccessTokenBlacklistRepository;
 import com.example.oops.cofig.security.util.CookieUtil;
 import com.example.oops.api.user.domain.RefreshToken;
 import com.example.oops.api.user.dto.LoginRequestDto;
@@ -12,6 +13,7 @@ import com.example.oops.common.error.OopsException;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -23,6 +25,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class LoginService  {
@@ -35,6 +38,8 @@ public class LoginService  {
     private final CookieUtil cookieUtil;
 
     private final SignService signService;
+
+    private final AccessTokenBlacklistRepository accessTokenBlacklistRepository;
 
     @Transactional
     public void login(LoginRequestDto loginRequestDto, HttpServletResponse response) {
@@ -106,4 +111,19 @@ public class LoginService  {
           refreshTokenRepository.save(new_refreshToken);
     }
 
+    @Transactional
+    public void logout(String accessToken, String userName) {
+
+
+        // 1. Access Token의 남은 유효 기간 계산 (밀리초)
+        long remainingExpirationTime = jwtTokenProvider.getRemainingExpirationTime(accessToken);
+
+        log.info("remaining expiration time: {}", remainingExpirationTime);
+
+        // 2. Access Token을 블랙리스트에 등록
+        accessTokenBlacklistRepository.blacklistAccessToken(accessToken, remainingExpirationTime);
+
+        // 3. Refresh Token 삭제 (재발급 차단)
+        refreshTokenRepository.deleteById(userName);
+    }
 }

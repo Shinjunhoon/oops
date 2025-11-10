@@ -17,6 +17,7 @@ public class AdminInitializer {
     private static final String ADMIN_USERNAME = "admin";
     private static final String REGULAR_USERNAME = "user";
     private static final String INITIAL_PASSWORD = "1234";
+    private static final String INITIAL_PASSWOR = "tlswjdgns31@naver.com";
 
     @Bean
     public CommandLineRunner initAdmin(
@@ -56,7 +57,7 @@ public class AdminInitializer {
 
                 LoginInfo regularLoginInfo = LoginInfo.builder()
                         .username(REGULAR_USERNAME)
-                        .password(passwordEncoder.encode(INITIAL_PASSWORD)) // 비밀번호 해시
+                        .password(passwordEncoder.encode(INITIAL_PASSWOR)) // 비밀번호 해시
                         .roles(Collections.singletonList("ROLE_USER")) // 일반 사용자 권한 부여
                         .build();
 

@@ -12,9 +12,11 @@ import com.example.oops.api.user.dto.SignRequestDto;
 import com.example.oops.api.user.dto.UserIdCheckRequestDto;
 import com.example.oops.api.user.repository.RefreshRequestDto;
 import com.example.oops.cofig.security.provider.JwtTokenProvider;
+import com.example.oops.cofig.security.util.CookieUtil;
 import com.example.oops.cofig.security.util.TokenInfo;
 import com.example.oops.common.ApiResponseEntity;
 import jakarta.mail.MessagingException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import static com.example.oops.cofig.security.util.CookieUtil.REFRESH_TOKEN_COOKIE_NAME;
+
 
 @RestController
 @RequestMapping("/api/auth")
@@ -38,6 +41,7 @@ public class UserController {
 
     private final JwtTokenProvider jwtTokenProvider;
 
+    private final CookieUtil cookieUtil;
 
 
     @PostMapping("/sign")
@@ -82,6 +86,31 @@ public class UserController {
         loginService.refreshToken(refreshToken,response);
        return ResponseEntity.ok().build();
     }
+    
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(
+            HttpServletRequest request,
+            @CookieValue(value = CookieUtil.REFRESH_TOKEN_COOKIE_NAME, required = false) String refreshToken,
+            HttpServletResponse response // 쿠키 삭제를 위해 응답 객체 사용
+    ) {
 
+        String accessToken = jwtTokenProvider.resolveToken(request);
+        System.out.println("[Logout] AccessToken: " + accessToken);
+        System.out.println("[Logout] refreshToken: " + refreshToken);
+        // 1. 토큰 유효성 검사 및 서버 로직 호출
+        if (accessToken != null && refreshToken != null){
 
+            // Access Token에서 Redis Key로 사용되는 userName(사용자 ID) 추출
+            // 토큰이 만료되어도 getUserPk는 ID를 반환하도록 JwtTokenProvider에 구현되어 있습니다.
+            String userName = jwtTokenProvider.getUserPk(accessToken);
+
+            // 2. Service 계층에 로그아웃 비즈니스 로직 위임
+            loginService.logout(accessToken, userName);
+        }
+
+        cookieUtil.deleteRefreshTokenCookie(response);
+
+        // 클라이언트에게 성공 응답 반환
+        return ResponseEntity.ok().build();
+    }
 }

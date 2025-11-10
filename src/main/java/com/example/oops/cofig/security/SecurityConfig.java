@@ -1,5 +1,6 @@
 package com.example.oops.cofig.security;
 
+import com.example.oops.api.user.repository.AccessTokenBlacklistRepository;
 import com.example.oops.cofig.security.filtter.JwtFilter;
 import com.example.oops.cofig.security.handler.CustomAccessDeniedHandler;
 import com.example.oops.cofig.security.handler.CustomAuthenticationEntryPoint;
@@ -27,6 +28,7 @@ public class SecurityConfig  {
     private final JwtTokenProvider jwtTokenProvider;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+    private final AccessTokenBlacklistRepository accessTokenBlacklistRepository; // 👈 추가!
 
 
     @Bean
@@ -73,9 +75,8 @@ public class SecurityConfig  {
 
                         .anyRequest().authenticated()
                 )
-
                 // JWT 필터 적용
-                .addFilterBefore(new JwtFilter(jwtTokenProvider),
+                .addFilterBefore(new JwtFilter(jwtTokenProvider,accessTokenBlacklistRepository),
                         UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

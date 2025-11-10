@@ -137,4 +137,36 @@ public class JwtTokenProvider {
         return false;
     }
 
+    public long getRemainingExpirationTime(String token) {
+        try {
+            // 토큰을 파싱하지 않고 바로 만료 시간만 가져옵니다.
+            // validateToken에서 이미 ExpiredJwtException을 잡으므로, 여기서는 단순히 만료 시간을 추출합니다.
+            Date expiration = Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .getExpiration();
+
+            // 현재 시간과 만료 시간의 차이를 계산
+            long now = System.currentTimeMillis();
+            long remainingTime = expiration.getTime() - now;
+
+            return Math.max(0, remainingTime); // 남은 시간이 음수가 되지 않도록 0 이상을 반환
+
+        } catch (ExpiredJwtException e) {
+            // 이미 만료된 토큰의 경우, TTL은 0이 되어야 합니다.
+            // ExpiredJwtException에서는 getClaims()로 만료된 클레임에 접근 가능합니다.
+            Date expiration = e.getClaims().getExpiration();
+            long now = System.currentTimeMillis();
+            long remainingTime = expiration.getTime() - now;
+
+            return Math.max(0, remainingTime);
+
+        } catch (Exception e) {
+            // 다른 파싱 오류 (서명 오류 등) 발생 시, 블랙리스트에 등록할 필요 없으므로 0 반환
+            log.error("JWT 파싱 중 오류 발생: {}", e.getMessage());
+            return 0;
+        }
+    }
 }
