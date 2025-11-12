@@ -7,4 +7,5 @@ import com.example.oops.api.user.dto.UserInfoDto;
 public interface UserService {
     public UserInfoDto getUserInfo(Long userId);
     public boolean checkUserId(UserIdCheckRequestDto requestDto);
+    public String deleteUser(Long userId);
 }

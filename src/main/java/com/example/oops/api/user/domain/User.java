@@ -5,6 +5,7 @@ import com.example.oops.api.user.domain.enums.Line;
 import com.example.oops.api.user.domain.value.LoginInfo;
 import com.example.oops.api.user.domain.value.UserInfo;
 import com.example.oops.api.user.dto.SignRequestDto;
+import com.example.oops.api.vote.domain.Vote;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
@@ -40,6 +41,10 @@ public class User implements UserDetails {
 
     @Column(name = "del_yn")
     private boolean delYn = false;
+
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<com.example.oops.api.post.domain.Post> posts = new ArrayList<>();
 
 
     public static User of(String encodedPassword,SignRequestDto signRequestDto) {

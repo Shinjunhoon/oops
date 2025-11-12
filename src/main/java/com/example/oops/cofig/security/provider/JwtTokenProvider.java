@@ -8,6 +8,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -28,7 +29,8 @@ import java.util.List;
 public class JwtTokenProvider {
 
 
-    private final String secretKey = "YourVerySecureAndLongSecretKeyForJWTsThatShouldBeAtLeast32Bytes";
+    @Value("${spring.jwt.secret}")
+    private  String secretKey;
 
     // 1시간
     private final Long accessTokenValidityInSeconds = 60* 60* 1000L;

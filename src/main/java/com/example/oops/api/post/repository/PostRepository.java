@@ -3,6 +3,7 @@ package com.example.oops.api.post.repository;
 import com.example.oops.api.post.domain.Post;
 import com.example.oops.api.post.domain.enums.BoardType;
 import com.example.oops.api.post.dtos.discussionDto.DiscussionListResponseDto;
+import com.example.oops.api.post.dtos.discussionDto.MyPostResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -27,5 +28,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             "ORDER BY (p.upVoteCount + p.downVoteCount) DESC")
     Page<DiscussionListResponseDto> findByBoardTypeOrderByTotalVotesDesc(@Param("boardType") BoardType boardType, Pageable pageable);
 
+    Page<Post> findByUserId(Long userId, Pageable pageable);
+
+    List<Post> findByUserId(Long userId);
 
 }

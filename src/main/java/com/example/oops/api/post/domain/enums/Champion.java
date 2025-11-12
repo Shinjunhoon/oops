@@ -229,7 +229,12 @@ public enum Champion {
     ZYRA("Zyra", "자이라"),
 
     // 클라이언트에만 존재하고 백엔드 Enum에 없던 챔피언 (참고용)
-    AURORA("Aurora", "오로라");
+    AURORA("Aurora", "오로라"),
+    MEL("Mel","멜"),
+    YUNARA("Yunara","유나라"),
+    HWEI("Hwei","호웨이"),
+    AMBESSA("AMBESSA","암베사");
+
 
 
     // 챔피언의 실제 영문 이름을 저장할 필드

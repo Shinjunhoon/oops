@@ -1,27 +1,6 @@
 version: '3.8'
 
 services:
-  mysql:
-    image: mysql:latest
-    container_name: oops
-    restart: always
-    ports:
-      - "3306:3306"
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: oops
-      MYSQL_USER: user
-      MYSQL_PASSWORD: 1234
-    command:
-      [
-        "--character-set-server=utf8mb4",
-        "--collation-server=utf8mb4_unicode_ci",
-        "--init-connect=SET NAMES utf8mb4"
-      ]
-    volumes:
-      - mysql_data:/var/lib/mysql
-    networks:
-      - backend
 
   redis:
     image: redis:latest
@@ -31,15 +10,39 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/data
+    networks:
+      - backend
 
+  # 2. Spring Boot 애플리케이션 서비스 추가
+  app:
+
+    build: .
+    image: spring-boot-app:latest # 빌드된 이미지에 이름 지정
+    container_name: spring_app_container
+    restart: always
+    # EC2의 80번 포트를 컨테이너의 8080 포트에 연결 (HTTP 접속용)
+    ports:
+      - "80:8080"
+    depends_on:
+      - redis # Redis가 먼저 시작되도록 의존성 설정
+    environment:
+      # Spring Boot가 Redis에 접속할 때 컨테이너 이름(서비스 이름)을 호스트로 사용하도록 환경 변수 주입
+      - SPRING_REDIS_HOST=redis
+      - SPRING_REDIS_PORT=6379
+      # 기타 AWS, RDS, Mail 비밀번호 변수들은 GitHub Actions를 통해 직접 주입됩니다.
+      - AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
+      - AWS_SECRET_KEY=${AWS_SECRET_KEY}
+      - AWS_RDS_USERNAME=${AWS_RDS_USERNAME}
+      - AWS_RDS_PASSWORD=${AWS_RDS_PASSWORD}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
     networks:
       - backend
 
 volumes:
-  mysql_data:
+  # 사용하지 않는 mysql_data는 제거하거나 유지할 수 있습니다.
   redis_data:
 
 networks:
   backend:
     driver: bridge
-

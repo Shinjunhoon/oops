@@ -59,4 +59,9 @@ public class PostController {
     public ResponseEntity<ApiResponseEntity> deleteDiscussion(@PathVariable Long postId, Authentication authentication) {
         return ApiResponseEntity.successResponseEntity(postDelService.deletePost(postId, jwtTokenProvider.getLoginId(authentication)));
     }
+
+    @GetMapping("/getMyPost")
+    public ResponseEntity<ApiResponseEntity> getMyPost(@PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,Authentication authentication) {
+        return ApiResponseEntity.successResponseEntity(postGetService.getMyPostResponse(jwtTokenProvider.getLoginId(authentication),pageable));
+    }
 }

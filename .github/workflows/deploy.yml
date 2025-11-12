@@ -1,0 +1,56 @@
+name: Spring Boot Docker Compose CI/CD to EC2
+
+on:
+  push:
+    branches:
+      - main # main 브랜치에 푸시될 때 이 워크플로우가 실행됩니다.
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+
+      - name: Deploy with Docker Compose via SSH
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+
+          script: |
+            
+            REPO_DIR="/home/${{ secrets.EC2_USER }}/spring-boot-app"
+            
+            
+            if [ ! -d "$REPO_DIR" ]; then
+              echo "Cloning repository..."
+              git clone https://github.com/${{ github.repository }}.git "$REPO_DIR"
+            else
+              echo "Pulling latest changes..."
+              cd "$REPO_DIR"
+              git pull origin main
+            fi
+
+           
+            cd "$REPO_DIR"
+            
+            echo "Exporting environment variables from secrets..."
+            
+            export AWS_ACCESS_KEY="${{ secrets.AWS_ACCESS_KEY }}"
+            export AWS_SECRET_KEY="${{ secrets.AWS_SECRET_KEY }}"
+            export AWS_RDS_USERNAME="${{ secrets.AWS_RDS_USERNAME }}"
+            export AWS_RDS_PASSWORD="${{ secrets.AWS_RDS_PASSWORD }}"
+            export MAIL_PASSWORD="${{ secrets.MAIL_PASSWORD }}"
+            export JWT_SECRET="${{ secrets.JWT_SECRET }}"
+            
+            
+            echo "Starting deployment with Docker Compose..."
+            
+            docker-compose up -d --build --force-recreate
+            
+            echo "Deployment complete. Spring Boot and Redis services are running."

@@ -5,6 +5,7 @@ import com.example.oops.api.post.domain.Post;
 import com.example.oops.api.post.domain.enums.BoardType;
 import com.example.oops.api.post.dtos.discussionDto.DiscussionListResponseDto;
 import com.example.oops.api.post.dtos.DiscussionResponseDto;
+import com.example.oops.api.post.dtos.discussionDto.MyPostResponse;
 import com.example.oops.api.post.repository.PostRepository;
 import com.example.oops.cofig.security.provider.JwtTokenProvider;
 import com.example.oops.common.error.ErrorCode;
@@ -78,5 +79,11 @@ public class PostGetService implements com.example.oops.api.post.application.Pos
             }
         });
         return discussionPage;
+    }
+
+    @Override
+    public Page<MyPostResponse> getMyPostResponse(Long userId, Pageable pageable) {
+        Page<Post> postPage = postRepository.findByUserId(userId, pageable);
+        return postPage.map(MyPostResponse::of);
     }
 }

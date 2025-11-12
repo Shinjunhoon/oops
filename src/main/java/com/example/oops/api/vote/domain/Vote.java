@@ -31,5 +31,5 @@ public class Vote {
     @Enumerated(EnumType.STRING)
     private VoteType voteType;
 
+    }
 
-}
