@@ -51,20 +51,24 @@ jobs:
             
             cd "$REPO_DIR"
             
-            # 4-2️⃣ 환경 변수를 현재 쉘에 export
+            # 4-2️⃣ 환경 변수를 현재 쉘에 export (Secret 전달의 가장 안정적인 방법)
+            # 모든 Secret 변수를 한 번에 정의합니다.
             export DOCKER_USERNAME="${{ secrets.DOCKER_USERNAME }}"
-            export DOCKER_PASSWORD="${{ secrets.DOCKER_PASSWORD }}" # 💡 로그인에 사용
+            export DOCKER_PASSWORD="${{ secrets.DOCKER_PASSWORD }}" 
             export AWS_ACCESS_KEY="${{ secrets.AWS_ACCESS_KEY }}"
             export AWS_SECRET_KEY="${{ secrets.AWS_SECRET_KEY }}"
-            # ... (나머지 RDS, MAIL, JWT 변수도 여기에 export) ...
+            export AWS_RDS_USERNAME="${{ secrets.AWS_RDS_USERNAME }}"
+            export AWS_RDS_PASSWORD="${{ secrets.AWS_RDS_PASSWORD }}"
+            export MAIL_PASSWORD="${{ secrets.MAIL_PASSWORD }}"
+            export JWT_SECRET="${{ secrets.JWT_SECRET }}"
             
             echo "Environment variables exported."
             
-            # 🚨 NEW: Docker Hub 로그인 (Pull 권한 획득)
+            # 🚨 Docker Hub 로그인 (Pull 권한 획득)
             echo "Logging into Docker Hub..."
             echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
             
-            # 4-3️⃣ 최신 Docker 이미지 Pull
+            # 4-3️⃣ 최신 Docker 이미지 Pull (export된 변수 사용)
             echo "Pulling latest image from Docker Hub..."
             docker-compose pull app 
             
@@ -72,8 +76,8 @@ jobs:
             echo "Starting containers..."
             docker-compose up -d --force-recreate
             
-            echo "Deployment complete."
-            
-            # 🚨 NEW: 로그인 정보 삭제 (보안 강화)
+            # 🚨 Docker Hub 로그아웃 (보안 강화)
             echo "Logging out of Docker Hub..."
             docker logout
+            
+            echo "Deployment complete."
