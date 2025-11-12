@@ -37,7 +37,6 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           timeout: 10m
 
-          # EC2에서 실행할 스크립트: sudo -E 옵션으로 환경 변수 전달
           script: |
             REPO_DIR="/home/${{ secrets.EC2_USER }}/spring-boot-app"
             
@@ -53,23 +52,25 @@ jobs:
             
             cd "$REPO_DIR"
             
-            # 4-2️⃣ 환경 변수를 현재 쉘에 export (sudo -E가 이 변수들을 사용할 것입니다)
-            export DOCKER_USERNAME="${{ secrets.DOCKER_USERNAME }}"
-            export AWS_ACCESS_KEY="${{ secrets.AWS_ACCESS_KEY }}"
-            export AWS_SECRET_KEY="${{ secrets.AWS_SECRET_KEY }}"
-            export AWS_RDS_USERNAME="${{ secrets.AWS_RDS_USERNAME }}"
-            export AWS_RDS_PASSWORD="${{ secrets.AWS_RDS_PASSWORD }}"
-            export MAIL_PASSWORD="${{ secrets.MAIL_PASSWORD }}"
-            export JWT_SECRET="${{ secrets.JWT_SECRET }}"
+            # 4-2️⃣ 환경 변수를 직접 전달하기 위한 변수 목록 생성 (문자열로)
+            # ⚠️ AWS_ACCESS_KEY 등에 특수문자가 포함될 경우 문제가 될 수 있습니다.
+            ENV_VARS="DOCKER_USERNAME='${{ secrets.DOCKER_USERNAME }}' \
+                      AWS_ACCESS_KEY='${{ secrets.AWS_ACCESS_KEY }}' \
+                      AWS_SECRET_KEY='${{ secrets.AWS_SECRET_KEY }}' \
+                      AWS_RDS_USERNAME='${{ secrets.AWS_RDS_USERNAME }}' \
+                      AWS_RDS_PASSWORD='${{ secrets.AWS_RDS_PASSWORD }}' \
+                      MAIL_PASSWORD='${{ secrets.MAIL_PASSWORD }}' \
+                      JWT_SECRET='${{ secrets.JWT_SECRET }}'"
             
-            echo "Environment variables exported to current shell."
+            echo "Environment variables prepared."
             
-            # 4-3️⃣ 최신 Docker 이미지 Pull (🚨 sudo -E 옵션을 사용하여 환경 변수 전달)
+            # 4-3️⃣ 최신 Docker 이미지 Pull (sudo 앞에 ENV_VARS를 직접 붙여 실행)
+            # bash -c를 사용하여 모든 변수가 같은 쉘에서 처리되도록 강제합니다.
             echo "Pulling latest image from Docker Hub..."
-            sudo -E docker-compose pull app 
+            sudo bash -c "$ENV_VARS docker-compose pull app" # <- 🚨 ENV_VARS와 명령을 문자열로 전달
             
-            # 4-4️⃣ 컨테이너 재시작 (🚨 sudo -E 옵션을 사용하여 환경 변수 전달)
+            # 4-4️⃣ 컨테이너 재시작
             echo "Starting containers..."
-            sudo -E docker-compose up -d --force-recreate
+            sudo bash -c "$ENV_VARS docker-compose up -d --force-recreate" # <- 🚨 ENV_VARS와 명령을 문자열로 전달
             
             echo "Deployment complete. Spring Boot and Redis services are running."
