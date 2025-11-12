@@ -51,28 +51,23 @@ jobs:
             
             cd "$REPO_DIR"
             
-            # 4-2️⃣ 민감한 환경 변수 문자열 생성 (평문 파일 저장 없이)
-            # ⚠️ 모든 비밀 변수를 **싱글 쿼트('...')로 감싸** 특수문자 문제를 방지합니다.
-            ENV_VARS="DOCKER_USERNAME='${{ secrets.DOCKER_USERNAME }}' \
-                      AWS_ACCESS_KEY='${{ secrets.AWS_ACCESS_KEY }}' \
-                      AWS_SECRET_KEY='${{ secrets.AWS_SECRET_KEY }}' \
-                      AWS_RDS_USERNAME='${{ secrets.AWS_RDS_USERNAME }}' \
-                      AWS_RDS_PASSWORD='${{ secrets.AWS_RDS_PASSWORD }}' \
-                      MAIL_PASSWORD='${{ secrets.MAIL_PASSWORD }}' \
-                      JWT_SECRET='${{ secrets.JWT_SECRET }}' \
-                      AWS_RDS_ENDPOINT='${{ secrets.AWS_RDS_ENDPOINT }}' \
-                      AWS_RDS_DATABASE='${{ secrets.AWS_RDS_DATABASE }}'" # 💡 이전 단계에서 제안한 RDS 변수 추가
+            # 4-2️⃣ 환경 변수를 현재 쉘에 export (Secret 전달의 가장 안정적인 방법)
+            export DOCKER_USERNAME="${{ secrets.DOCKER_USERNAME }}"
+            export AWS_ACCESS_KEY="${{ secrets.AWS_ACCESS_KEY }}"
+            export AWS_SECRET_KEY="${{ secrets.AWS_SECRET_KEY }}"
+            export AWS_RDS_USERNAME="${{ secrets.AWS_RDS_USERNAME }}"
+            export AWS_RDS_PASSWORD="${{ secrets.AWS_RDS_PASSWORD }}"
+            export MAIL_PASSWORD="${{ secrets.MAIL_PASSWORD }}"
+            export JWT_SECRET="${{ secrets.JWT_SECRET }}"
             
-            echo "Environment variables prepared for non-persistent injection."
+            echo "Environment variables exported."
             
-            # 4-3️⃣ 최신 Docker 이미지 Pull (ENV_VARS를 앞에 붙여 실행)
+            # 4-3️⃣ 최신 Docker 이미지 Pull (export된 변수 사용)
             echo "Pulling latest image from Docker Hub..."
-            # ENV_VARS로 변수를 주입하여 docker-compose.yml의 ${DOCKER_USERNAME}을 해석합니다.
-            $ENV_VARS docker-compose pull app
+            docker-compose pull app 
             
             # 4-4️⃣ 컨테이너 재시작
             echo "Starting containers..."
-            # ENV_VARS로 변수를 주입하여 컨테이너 내부의 환경 변수 및 RDS URL을 설정합니다.
-            $ENV_VARS docker-compose up -d --force-recreate
+            docker-compose up -d --force-recreate
             
-            echo "Deployment complete. Sensitive variables were not persisted."
+            echo "Deployment complete."
