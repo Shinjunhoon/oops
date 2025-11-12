@@ -1,43 +1,57 @@
-name: Spring Boot Docker Compose CI/CD to EC2
+name: Build, Push, and Deploy (Docker Hub Strategy)
 
 on:
   push:
     branches:
-      - main # main 브랜치에 푸시될 때 이 워크플로우가 실행됩니다.
+      - main
 
 jobs:
-  deploy:
+  build_and_deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
 
+      # 1. Docker Hub 로그인 (빌드된 이미지를 푸시하기 위해 필수)
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Deploy with Docker Compose via SSH
+      # 2. Docker 이미지 빌드 및 푸시 (GitHub Runner에서 수행되므로 빠름)
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+
+          tags: ${{ secrets.DOCKER_USERNAME }}/oops-app:latest
+
+      # 3. EC2 서버에 SSH 명령으로 배포 시작 (Pull 명령만 실행)
+      - name: Deploy to EC2 (Pull and Run)
         uses: appleboy/ssh-action@v1.0.0
         with:
-
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          timeout: 30m
+          # 이제 빌드가 아니므로 10분으로 충분합니다.
+          timeout: 10m
 
-
+          # EC2에서 실행할 스크립트: Pull, Export Secrets, Run
           script: |
-            
             REPO_DIR="/home/${{ secrets.EC2_USER }}/spring-boot-app"
             
-            
+            # 리포지토리 파일 업데이트 (docker-compose.yml 변경 사항 반영)
             if [ ! -d "$REPO_DIR" ]; then
               echo "Cloning repository..."
               git clone https://github.com/${{ github.repository }}.git "$REPO_DIR"
             else
-              echo "Pulling latest changes..."
+              echo "Pulling latest changes for config files..."
               cd "$REPO_DIR"
               git pull origin main
             fi
 
-           
             cd "$REPO_DIR"
             
             echo "Exporting environment variables from secrets..."
@@ -48,10 +62,14 @@ jobs:
             export AWS_RDS_PASSWORD="${{ secrets.AWS_RDS_PASSWORD }}"
             export MAIL_PASSWORD="${{ secrets.MAIL_PASSWORD }}"
             export JWT_SECRET="${{ secrets.JWT_SECRET }}"
+            export DOCKER_USERNAME="${{ secrets.DOCKER_USERNAME }}"
             
+            echo "Starting deployment by pulling image..."
             
-            echo "Starting deployment with Docker Compose..."
+            # 최신 이미지를 Docker Hub에서 Pull
+            sudo docker-compose pull app
             
-            docker-compose up -d --build --force-recreate
+            # Pull한 이미지를 사용하여 컨테이너 실행 (빌드 제거)
+            sudo docker-compose up -d --force-recreate
             
-            echo "Deployment complete. Spring Boot and Redis services are running."
+            echo "Deployment complete. Image pulled and services restarted."
