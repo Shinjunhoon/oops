@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions:checkout@v3
+        uses: actions/checkout@v3
 
       # ... (1. Docker Hub 로그인 및 2. 이미지 빌드/푸시 단계는 동일) ...
       - name: Log in to Docker Hub
