@@ -40,19 +40,11 @@ jobs:
             REPO_DIR="/home/${{ secrets.EC2_USER }}/spring-boot-app"
             
             # 4-1️⃣ 리포지토리 파일 업데이트
-            if [ ! -d "$REPO_DIR" ]; then
-              echo "Cloning repository..."
-              git clone https://github.com/${{ github.repository }}.git "$REPO_DIR"
-            else
-              echo "Pulling latest changes..."
-              cd "$REPO_DIR"
-              git pull origin main
-            fi
+            # ... (이전과 동일) ...
             
             cd "$REPO_DIR"
             
-            # 4-2️⃣ 환경 변수를 현재 쉘에 export (Secret 전달의 가장 안정적인 방법)
-            # 모든 Secret 변수를 한 번에 정의합니다.
+            # 4-2️⃣ 환경 변수를 현재 쉘에 export
             export DOCKER_USERNAME="${{ secrets.DOCKER_USERNAME }}"
             export DOCKER_PASSWORD="${{ secrets.DOCKER_PASSWORD }}" 
             export AWS_ACCESS_KEY="${{ secrets.AWS_ACCESS_KEY }}"
@@ -64,19 +56,19 @@ jobs:
             
             echo "Environment variables exported."
             
-            # 🚨 Docker Hub 로그인 (Pull 권한 획득)
+            # 🚨 Docker Hub 로그인 
             echo "Logging into Docker Hub..."
             echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
             
-            # 4-3️⃣ 최신 Docker 이미지 Pull (export된 변수 사용)
+            # 4-3️⃣ 최신 Docker 이미지 Pull (🚨 docker-compose -> docker compose)
             echo "Pulling latest image from Docker Hub..."
-            docker-compose pull app 
+            docker compose pull app 
             
-            # 4-4️⃣ 컨테이너 재시작
+            # 4-4️⃣ 컨테이너 재시작 (🚨 docker-compose -> docker compose)
             echo "Starting containers..."
-            docker-compose up -d --force-recreate
+            docker compose up -d --force-recreate
             
-            # 🚨 Docker Hub 로그아웃 (보안 강화)
+            # 🚨 Docker Hub 로그아웃
             echo "Logging out of Docker Hub..."
             docker logout
             
