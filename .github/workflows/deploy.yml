@@ -35,41 +35,41 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          # 이제 빌드가 아니므로 10분으로 충분합니다.
           timeout: 10m
 
-          # EC2에서 실행할 스크립트: Pull, Export Secrets, Run
+          # EC2에서 실행할 스크립트: .env 파일 생성 후 Docker Compose 실행
           script: |
             REPO_DIR="/home/${{ secrets.EC2_USER }}/spring-boot-app"
             
-            # 리포지토리 파일 업데이트 (docker-compose.yml 변경 사항 반영)
+            # 4-1️⃣ 리포지토리 파일 업데이트
             if [ ! -d "$REPO_DIR" ]; then
               echo "Cloning repository..."
               git clone https://github.com/${{ github.repository }}.git "$REPO_DIR"
             else
-              echo "Pulling latest changes for config files..."
+              echo "Pulling latest changes..."
               cd "$REPO_DIR"
               git pull origin main
             fi
-
+            
             cd "$REPO_DIR"
             
-            echo "Exporting environment variables from secrets..."
+            # 4-2️⃣ 환경 변수를 직접 전달하기 위한 변수 목록 생성
+            ENV_VARS="DOCKER_USERNAME='${{ secrets.DOCKER_USERNAME }}' \
+                      AWS_ACCESS_KEY='${{ secrets.AWS_ACCESS_KEY }}' \
+                      AWS_SECRET_KEY='${{ secrets.AWS_SECRET_KEY }}' \
+                      AWS_RDS_USERNAME='${{ secrets.AWS_RDS_USERNAME }}' \
+                      AWS_RDS_PASSWORD='${{ secrets.AWS_RDS_PASSWORD }}' \
+                      MAIL_PASSWORD='${{ secrets.MAIL_PASSWORD }}' \
+                      JWT_SECRET='${{ secrets.JWT_SECRET }}'"
             
-            export AWS_ACCESS_KEY="${{ secrets.AWS_ACCESS_KEY }}"
-            export AWS_SECRET_KEY="${{ secrets.AWS_SECRET_KEY }}"
-            export AWS_RDS_USERNAME="${{ secrets.AWS_RDS_USERNAME }}"
-            export AWS_RDS_PASSWORD="${{ secrets.AWS_RDS_PASSWORD }}"
-            export MAIL_PASSWORD="${{ secrets.MAIL_PASSWORD }}"
-            export JWT_SECRET="${{ secrets.JWT_SECRET }}"
-            export DOCKER_USERNAME="${{ secrets.DOCKER_USERNAME }}"
+            echo "Environment variables prepared."
             
-            echo "Starting deployment by pulling image..."
+            # 4-3️⃣ 최신 Docker 이미지 Pull (변수를 포함하여 실행)
+            echo "Pulling latest image from Docker Hub..."
+            sudo $ENV_VARS docker-compose pull app # 'app' 서비스만 pull
             
-            # 최신 이미지를 Docker Hub에서 Pull
-            sudo docker-compose pull app
+            # 4-4️⃣ 컨테이너 재시작 (변수를 포함하여 실행)
+            echo "Starting containers..."
+            sudo $ENV_VARS docker-compose up -d --force-recreate
             
-            # Pull한 이미지를 사용하여 컨테이너 실행 (빌드 제거)
-            sudo docker-compose up -d --force-recreate
-            
-            echo "Deployment complete. Image pulled and services restarted."
+            echo "Deployment complete. Spring Boot and Redis services are running."
