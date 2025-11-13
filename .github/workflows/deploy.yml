@@ -61,6 +61,7 @@ jobs:
             export AWS_RDS_PASSWORD="${{ secrets.AWS_RDS_PASSWORD }}"
             export MAIL_PASSWORD="${{ secrets.MAIL_PASSWORD }}"
             export JWT_SECRET="${{ secrets.JWT_SECRET }}"
+            export RDS_URL="${{ secrets.RDS_URL }}"
             
             echo "Environment variables exported."
             

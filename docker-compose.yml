@@ -37,6 +37,7 @@ services:
       - AWS_RDS_PASSWORD=${AWS_RDS_PASSWORD}
       - MAIL_PASSWORD=${MAIL_PASSWORD}
       - JWT_SECRET=${JWT_SECRET}
+      - RDS_URL=${RDS_URL}
 
       # ⚠️ RDS URL은 Spring Boot 설정 파일에 있거나, 여기에 명시되어야 합니다.
       # Spring Boot 설정 파일에 ${...} 변수만 있다면, 여기에 명시해 주세요.
