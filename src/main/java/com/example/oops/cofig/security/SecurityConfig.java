@@ -8,6 +8,7 @@ import com.example.oops.cofig.security.provider.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -59,6 +60,10 @@ public class SecurityConfig  {
                 // 세션 미사용 (Stateless)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+
+
+
                 // 예외 처리
                 .exceptionHandling(handling -> handling
                         .authenticationEntryPoint(customAuthenticationEntryPoint) // 401
@@ -67,6 +72,8 @@ public class SecurityConfig  {
 
                 // URL별 권한 설정
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
                         .requestMatchers("/api/auth/login", "/api/auth/sign", "/api/auth/reissue"
                         ,"api/auth/refresh","/api/post/get/**","/api/auth/email","/api/auth/emailVerify","api/auth/checkUserName"
                         ,"/api/post/test","/api/post/get/","/api/post/get/**","/api/comment/createComment").permitAll()
