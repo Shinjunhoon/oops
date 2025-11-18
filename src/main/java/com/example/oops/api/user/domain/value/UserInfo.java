@@ -7,9 +7,10 @@ import jakarta.persistence.Enumerated;
 import jdk.jfr.Enabled;
 import lombok.*;
 
+
 @Getter
 @Embeddable
-@Builder
+@Builder(toBuilder = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED) // 👈 JPA 사용을 위해 protected 기본 생성자 추가
 @AllArgsConstructor
 public class UserInfo {
@@ -18,5 +19,11 @@ public class UserInfo {
 
     @Enumerated(EnumType.STRING)
     private Line line;
+
+    public UserInfo updateNickname(String newNickname) {
+        return this.toBuilder()
+                .nickname(newNickname)
+                .build();
+    }
 
 }

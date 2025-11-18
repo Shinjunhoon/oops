@@ -1,9 +1,11 @@
 package com.example.oops.cofig.security;
 
+import com.example.oops.api.user.application.CustomOAuth2UserService;
 import com.example.oops.api.user.repository.AccessTokenBlacklistRepository;
 import com.example.oops.cofig.security.filtter.JwtFilter;
 import com.example.oops.cofig.security.handler.CustomAccessDeniedHandler;
 import com.example.oops.cofig.security.handler.CustomAuthenticationEntryPoint;
+import com.example.oops.cofig.security.handler.OAuth2AuthenticationSuccessHandler;
 import com.example.oops.cofig.security.provider.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -29,7 +31,9 @@ public class SecurityConfig  {
     private final JwtTokenProvider jwtTokenProvider;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
-    private final AccessTokenBlacklistRepository accessTokenBlacklistRepository; // 👈 추가!
+    private final AccessTokenBlacklistRepository accessTokenBlacklistRepository;
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final OAuth2AuthenticationSuccessHandler oauth2AuthenticationSuccessHandler;
 
 
     @Bean
@@ -73,6 +77,7 @@ public class SecurityConfig  {
                 // URL별 권한 설정
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
 
                         .requestMatchers("/api/auth/login", "/api/auth/sign", "/api/auth/reissue"
                         ,"api/auth/refresh","/api/post/get/**","/api/auth/email","/api/auth/emailVerify","api/auth/checkUserName"
@@ -81,6 +86,14 @@ public class SecurityConfig  {
                         .requestMatchers("/api/admin/users/count","/api/admin/getReport","/api/admin/posts/").hasRole("ADMIN")
 
                         .anyRequest().authenticated()
+                )
+                .oauth2Login(oauth2 -> oauth2
+                        .userInfoEndpoint(userInfo -> userInfo
+                                // 1. 소셜에서 가져온 사용자 정보를 처리할 서비스 등록 (회원가입/로그인 처리 담당)
+                                .userService(customOAuth2UserService)
+                        )
+                        // 2. 로그인 성공 시 커스텀 핸들러 사용 -> JWT 발행 및 리디렉션
+                        .successHandler(oauth2AuthenticationSuccessHandler)
                 )
                 // JWT 필터 적용
                 .addFilterBefore(new JwtFilter(jwtTokenProvider,accessTokenBlacklistRepository),

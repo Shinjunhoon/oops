@@ -1,6 +1,7 @@
 package com.example.oops.common;
 
 import com.example.oops.api.user.domain.User;
+import com.example.oops.api.user.domain.enums.AuthType;
 import com.example.oops.api.user.domain.enums.Line;
 import com.example.oops.api.user.domain.value.LoginInfo;
 import com.example.oops.api.user.domain.value.UserInfo;
@@ -44,6 +45,7 @@ public class AdminInitializer {
                         .build();
 
                 User adminUser = User.builder()
+                        .authType(AuthType.LOCAL)
                         .loginInfo(adminLoginInfo)
                         .userInfo(adminUserInfo)
                         .build();
@@ -69,6 +71,7 @@ public class AdminInitializer {
                         .build();
 
                 User regularUser = User.builder()
+                        .authType(AuthType.LOCAL)
                         .loginInfo(regularLoginInfo)
                         .userInfo(regularUserInfo)
                         .build();
@@ -92,6 +95,7 @@ public class AdminInitializer {
                         .build();
 
                 User regularUser = User.builder()
+                        .authType(AuthType.LOCAL)
                         .loginInfo(regularLoginInfo)
                         .userInfo(regularUserInfo)
                         .build();
@@ -113,6 +117,7 @@ public class AdminInitializer {
                         .build();
 
                 User regularUser = User.builder()
+                        .authType(AuthType.LOCAL)
                         .loginInfo(regularLoginInfo)
                         .userInfo(regularUserInfo)
                         .build();

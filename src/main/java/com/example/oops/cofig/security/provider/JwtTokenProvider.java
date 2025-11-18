@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
@@ -57,6 +58,21 @@ public class JwtTokenProvider {
                 .refreshToken(refreshToken)
                 .refreshExpiresIn(refreshTokenValidityInSeconds)
                 .build();
+    }
+    public TokenInfo createToken(Authentication authentication) {
+        // UserDetails에서 userPk (username/email) 추출
+        String userPk = authentication.getName();
+        // 역할 추출
+        List<String> roles = this.extractRoles(authentication);
+
+        return createToken(userPk, roles);
+    }
+
+    // ⭐️ 추가: Authentication 객체에서 역할을 List<String>으로 추출하는 메서드
+    public List<String> extractRoles(Authentication authentication) {
+        return authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(java.util.stream.Collectors.toList());
     }
 
     public String creatAccessToken  (String userPk, List<String> roles){
