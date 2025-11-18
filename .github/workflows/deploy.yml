@@ -62,7 +62,8 @@ jobs:
             export MAIL_PASSWORD="${{ secrets.MAIL_PASSWORD }}"
             export JWT_SECRET="${{ secrets.JWT_SECRET }}"
             export RDS_URL="${{ secrets.RDS_URL }}"
-            
+            export CLIENT_ID="${{ secrets.CLIENT_ID}}"
+            export CLIENT_SECRET="${{ secrets.CLIENT_SECRET}}"
             echo "Environment variables exported."
             
             # 🚨 Docker Hub 로그인 (EC2에서 Pull 권한 획득)
