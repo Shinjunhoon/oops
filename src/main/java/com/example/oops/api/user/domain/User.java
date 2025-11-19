@@ -79,12 +79,11 @@ public class User implements UserDetails {
 
         UserInfo userInfo1 = UserInfo.builder()
                 .nickname(attributes.getName())
-                // ⭐️ 수정: line 대신 lolPosition 필드 사용 및 초기값 설정
                 .line(Line.NONE)
                 .build();
 
         LoginInfo loginInfo1 = LoginInfo.builder()
-                .username(attributes.getEmail())
+                .username(attributes.getSocialId())
                 .password("oauth_user_not_applicable")
                 .roles(List.of("ROLE_USER"))
                 .build();
