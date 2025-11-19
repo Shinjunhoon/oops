@@ -65,6 +65,12 @@ public class LoginService  {
                 tokenInfo.getRefreshExpiresIn()/1000
         );
 
+        cookieUtil.addAccessToken(
+                response,
+                tokenInfo.getAccessToken(),
+                tokenInfo.getRefreshExpiresIn()/1000
+        );
+
         RefreshToken refreshToken = RefreshToken.builder()
                 .userName(username)
                 .token(tokenInfo.getRefreshToken())

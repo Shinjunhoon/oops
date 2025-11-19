@@ -9,9 +9,23 @@ import org.springframework.stereotype.Component;
 public class CookieUtil {
 
     public static final String REFRESH_TOKEN_COOKIE_NAME = "refreshToken";
+    public static final String ACCESS_TOKEN_COOKIE_NAME = "accessToken";
 
     public void addRefreshToken(HttpServletResponse response, String refreshToken, Long expiresIn) {
         Cookie cookie = new Cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken);
+
+        cookie.setHttpOnly(true);
+
+        cookie.setSecure(false);
+
+        cookie.setMaxAge((int) Math.min(expiresIn, Integer.MAX_VALUE));
+        cookie.setPath("/");
+
+        response.addCookie(cookie);
+    }
+
+    public void addAccessToken(HttpServletResponse response, String accessToken, Long expiresIn) {
+        Cookie cookie = new Cookie(ACCESS_TOKEN_COOKIE_NAME, accessToken);
 
         cookie.setHttpOnly(true);
 
