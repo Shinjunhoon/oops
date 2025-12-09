@@ -44,7 +44,7 @@ public class Post {
     @Column(length = 500)
     private String title;
 
-    @Column(length = 500)
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     @Enumerated(EnumType.STRING)
