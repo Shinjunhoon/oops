@@ -43,6 +43,8 @@ public class Post {
 
     @Column(length = 500)
     private String title;
+
+    @Column(length = 500)
     private String content;
 
     @Enumerated(EnumType.STRING)
