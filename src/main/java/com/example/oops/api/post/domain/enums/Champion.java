@@ -100,7 +100,7 @@ public enum Champion {
 
     // L
     LEBLANC("LeBlanc", "르블랑"),
-    LEE_SIN("Lee Sin", "리 신"), // 변경: LEE_SIN -> LEESIN
+    LEESIN("Lee Sin", "리 신"), // 변경: LEE_SIN -> LEESIN
     LEONA("Leona", "레오나"),
     LILLIA("Lillia", "릴리아"),
     LISSANDRA("Lissandra", "리산드라"),

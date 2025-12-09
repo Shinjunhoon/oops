@@ -33,4 +33,6 @@ public class DiscussionResponseDto {
     private String userName;
     private String koreanName1;
     private String koreanName2;
+    private int viewCount;
+    private Boolean isNotice;
 }

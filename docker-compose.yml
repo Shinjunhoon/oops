@@ -40,6 +40,7 @@ services:
       - RDS_URL=${RDS_URL}
       - CLIENT_ID=${CLIENT_ID}
       - CLIENT_SECRET=${CLIENT_SECRET}
+      - RIOT_API=${RIOT_API}
 
       # ⚠️ RDS URL은 Spring Boot 설정 파일에 있거나, 여기에 명시되어야 합니다.
       # Spring Boot 설정 파일에 ${...} 변수만 있다면, 여기에 명시해 주세요.

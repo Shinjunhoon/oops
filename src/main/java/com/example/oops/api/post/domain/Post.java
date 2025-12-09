@@ -5,7 +5,10 @@ import com.example.oops.api.comment.Comment;
 import com.example.oops.api.post.domain.enums.BoardType;
 import com.example.oops.api.post.domain.enums.Champion;
 import com.example.oops.api.post.domain.enums.Tier;
+import com.example.oops.api.post.dtos.DesPostListTopFive.PostFiveResponseDto;
 import com.example.oops.api.post.dtos.DiscussionResponseDto;
+import com.example.oops.api.post.dtos.GeneralPostResponseDto;
+import com.example.oops.api.post.dtos.MadMovieResponseDto;
 import com.example.oops.api.user.domain.User;
 import com.example.oops.api.user.domain.enums.Line;
 import com.example.oops.api.vote.domain.Vote;
@@ -73,7 +76,11 @@ public class Post {
     @CreatedDate
     private LocalDateTime createdAt;
 
+    private int viewCount = 0;
+
     private String imageUrl;
+
+    private boolean isNotice;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, orphanRemoval = true)
     @OrderBy("createAt DESC ")
@@ -118,7 +125,40 @@ public class Post {
                 this.user.getId(),
                 this.user.getUserInfo().getNickname(),
                 this.champion1.getKoreanName(),
-                this.champion2.getKoreanName()
+                this.champion2.getKoreanName(),
+                this.viewCount,
+                this.isNotice
         );
     }
+    public MadMovieResponseDto toMadMovieResponseDto() {
+        return new MadMovieResponseDto(
+                this.id,
+                this.title,
+                this.upVoteCount, // 가정: 엔티티에 직접 카운트 필드가 있다고 가정
+                this.downVoteCount,
+                this.createdAt,
+                this.imageUrl,
+                null,
+                this.user.getId(),
+                this.user.getUserInfo().getNickname(),
+                this.viewCount,
+                this.isNotice,
+                this.content
+        );
+    }
+
+    public GeneralPostResponseDto toGeneralPostResponseDto() {
+        return new GeneralPostResponseDto(
+                this.id,
+                this.title,
+                this.content,
+                this.createdAt,
+                this.imageUrl,
+                this.user.getUserInfo().getNickname(),
+                null,
+                this.user.getId(),
+                this.isNotice
+        );
+    }
+
 }

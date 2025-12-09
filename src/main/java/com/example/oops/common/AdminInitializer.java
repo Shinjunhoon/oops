@@ -40,6 +40,7 @@ public class AdminInitializer {
                         .build();
 
                 UserInfo adminUserInfo = UserInfo.builder()
+//                        .email("admin@gmail.com")
                         .line(Line.BOTTOM)
                         .nickname(ADMIN_USERNAME)
                         .build();
@@ -66,6 +67,7 @@ public class AdminInitializer {
                         .build();
 
                 UserInfo regularUserInfo = UserInfo.builder()
+                        .email("regular@gmail.com")
                         .line(Line.TOP) // 관리자와 다른 라인으로 설정
                         .nickname(REGULAR_USERNAME)
                         .build();
@@ -90,6 +92,7 @@ public class AdminInitializer {
                         .build();
 
                 UserInfo regularUserInfo = UserInfo.builder()
+                        .email("regular@gmail.com")
                         .line(Line.TOP) // 관리자와 다른 라인으로 설정
                         .nickname(REGULAR_USERNAME2)
                         .build();

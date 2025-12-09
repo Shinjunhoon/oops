@@ -24,5 +24,11 @@ public class ReportController {
         return ApiResponseEntity.successResponseEntity(reportService.report(reportRequest,jwtTokenProvider.getLoginId(authentication)));
     }
 
+    @PostMapping("/comments")
+    public ResponseEntity<ApiResponseEntity> user(@RequestBody UserReportRequestDto userReportRequestDto, Authentication authentication) {
+
+        return ApiResponseEntity.successResponseEntity(reportService.userReport(userReportRequestDto,jwtTokenProvider.getLoginId(authentication)));
+    }
+
 
 }

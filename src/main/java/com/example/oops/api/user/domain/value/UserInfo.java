@@ -20,6 +20,8 @@ public class UserInfo {
     @Enumerated(EnumType.STRING)
     private Line line;
 
+    private String email;
+
     public UserInfo updateNickname(String newNickname) {
         return this.toBuilder()
                 .nickname(newNickname)

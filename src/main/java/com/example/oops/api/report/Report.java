@@ -1,5 +1,6 @@
 package com.example.oops.api.report;
 
+import com.example.oops.api.post.domain.enums.BoardType;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -23,12 +24,25 @@ public class Report {
     @Column(nullable = false)
     private Long postId;
 
+    private Long reportedId;
+    private String comment;
+    private String reporterName;
+    private String reportedName;
+    private Long commentId;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
     private ReportType reportType;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 30)
+    private ReportTypes reportTypes;
+
     @Column(nullable = false, columnDefinition = "TEXT")
     private String reasonDetail;
+
+    @Enumerated(EnumType.STRING)
+    private BoardType boardType;
 
     @Column(nullable = false)
     private boolean processed = false;

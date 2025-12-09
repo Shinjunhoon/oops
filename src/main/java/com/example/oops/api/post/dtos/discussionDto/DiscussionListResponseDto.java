@@ -25,6 +25,8 @@ public class DiscussionListResponseDto {
     private Tier tier;
     private String koreanName1;
     private String koreanName2;
+    private int viewCount;
+    private  boolean isNotice;
 
     public DiscussionListResponseDto(
             Long id,
@@ -34,7 +36,9 @@ public class DiscussionListResponseDto {
             LocalDateTime createdAt,
             Champion champion1,
             Champion champion2,
-            Tier tier)
+            Tier tier,
+            int viewCount,
+            Boolean isNotice)
     {
         this.id = id;
         this.title = title;
@@ -44,7 +48,8 @@ public class DiscussionListResponseDto {
         this.champion1 = champion1;
         this.champion2 = champion2;
         this.tier = tier;
-
+        this.viewCount = viewCount;
+        this.isNotice = isNotice;
         // koreanName1, koreanName2는 JPQL에서 채우지 않으므로 여기서 설정하지 않습니다.
     }
 }

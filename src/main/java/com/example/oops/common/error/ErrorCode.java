@@ -26,7 +26,16 @@ public enum ErrorCode {
     REFRESH_TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "AUTH-001", "제공된 Refresh Token이 유효하지 않거나 위변조되었습니다."),
     REFRESH_TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED, "AUTH-002", "유효한 Refresh Token 정보가 서버에 없습니다. 재로그인이 필요합니다."),
     REFRESH_TOKEN_MISMATCH(HttpStatus.UNAUTHORIZED, "AUTH-003", "요청 토큰과 서버에 저장된 토큰이 일치하지 않습니다."),
-    NO_AUTHORITY(HttpStatus.FORBIDDEN, "AUTH-403", "해당 작업을 수행할 권한이 없습니다."); // ✨ 추가된 코드
+    NO_AUTHORITY(HttpStatus.FORBIDDEN, "AUTH-403", "해당 작업을 수행할 권한이 없습니다."), // ✨ 추가된 코드
+    RIOT_API_NOT_FOUND(HttpStatus.NOT_FOUND, "AUTH-44","Riot API에서 요청한 리소스를 찾을 수 없습니다."),
+    RIOT_API_RATE_LIMIT_EXCEEDED(HttpStatus.TOO_MANY_REQUESTS,"AUTH-44","Riot API 호출 제한을 초과했습니다. 잠시 후 다시 시도해 주세요."),
+    RIOT_API_INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "AUTH-44","Riot API 서버 내부 오류입니다."),
+
+    // 일반적인 클라이언트 에러
+    INVALID_PARAMETER(HttpStatus.BAD_REQUEST, "AUTH-44","요청 파라미터가 유효하지 않습니다."),
+    REQUIRED_VIDEO_SOURCE_MISSING(HttpStatus.BAD_REQUEST,"POST-002","동영상이 없습니다"),
+    COMMENT_NOT_FOUND(HttpStatus.BAD_REQUEST,"POST-002","댓글이 없습니다.");
+
 
 
     private final HttpStatus status;

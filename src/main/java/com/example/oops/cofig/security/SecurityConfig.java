@@ -43,7 +43,7 @@ public class SecurityConfig  {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000/","http://localhost:3000/","https://oops.io.kr"));
+        configuration.setAllowedOrigins(List.of("http://localhost:3000","https://oops.io.kr"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setExposedHeaders(List.of("Authorization"));
@@ -76,14 +76,14 @@ public class SecurityConfig  {
 
                 // URL별 권한 설정
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/admin/users/count","/api/admin/getReport","/api/admin/posts/","/api/admin/getReportUser").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
 
-                        .requestMatchers("/api/auth/login", "/api/auth/sign", "/api/auth/reissue"
+                        .requestMatchers("/api/auth/login", "/api/auth/sign", "/api/auth/reissue","/api/post/getDesPost/**"
                         ,"api/auth/refresh","/api/post/get/**","/api/auth/email","/api/auth/emailVerify","api/auth/checkUserName"
-                        ,"/api/post/test","/api/post/get/","/api/post/get/**","/api/comment/createComment").permitAll()
+                        ,"/api/post/test","/api/post/get/","/api/post/get/**","/api/comment/createComment","/api/v1/account/player-details/**","/api/post/get/","/api/post/get/MovUpList").permitAll()
 
-                        .requestMatchers("/api/admin/users/count","/api/admin/getReport","/api/admin/posts/").hasRole("ADMIN")
 
                         .anyRequest().authenticated()
                 )

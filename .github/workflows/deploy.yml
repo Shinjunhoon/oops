@@ -64,6 +64,7 @@ jobs:
             export RDS_URL="${{ secrets.RDS_URL }}"
             export CLIENT_ID="${{ secrets.CLIENT_ID}}"
             export CLIENT_SECRET="${{ secrets.CLIENT_SECRET}}"
+            export RIOT_API="${{ secrets.RIOT_API}}"
             echo "Environment variables exported."
             
             # 🚨 Docker Hub 로그인 (EC2에서 Pull 권한 획득)

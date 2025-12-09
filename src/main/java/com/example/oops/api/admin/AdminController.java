@@ -36,12 +36,40 @@ public class AdminController {
         return ApiResponseEntity.successResponseEntity(adminService.getReports());
     }
 
+    @GetMapping("/getReportUser")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponseEntity> getReportUser(){
+        return ApiResponseEntity.successResponseEntity(adminService.getCommentReports());
+    }
+
+    @GetMapping("/getUsers")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponseEntity> getUsers(){
+        return ApiResponseEntity.successResponseEntity(adminService.getUsers());
+    }
+
     @DeleteMapping("/posts/{postId}") // HTTP DELETE를 사용하여 리소스 삭제를 명확히 함
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponseEntity> deletePostByAdmin(@PathVariable Long postId, Authentication authentication) {
-
-
         return ApiResponseEntity.successResponseEntity(adminService.deletePostAndProcessReports(postId, jwtTokenProvider.getLoginId(authentication)));
     }
 
+    @DeleteMapping("/user/{userId}") // HTTP DELETE를 사용하여 리소스 삭제를 명확히 함
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponseEntity> delUser(@PathVariable Long userId) {
+        return ApiResponseEntity.successResponseEntity(adminService.delUser(userId));
+    }
+
+    @GetMapping("/getUsers/{userId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponseEntity> getUser(@PathVariable Long userId) {
+        return ApiResponseEntity.successResponseEntity(adminService.getUserById(userId));
+    }
+
+
+    @DeleteMapping("/comment/{commentId}") // HTTP DELETE를 사용하여 리소스 삭제를 명확히 함
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponseEntity> delComment(@PathVariable Long commentId) {
+        return ApiResponseEntity.successResponseEntity(adminService.delComment(commentId));
+    }
 }

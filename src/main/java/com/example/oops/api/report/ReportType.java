@@ -17,7 +17,17 @@ public enum ReportType {
     HARASSMENT("괴롭힘/욕설/비방"),
 
     /** 위 목록에 해당하지 않는 기타 사유 */
-    OTHER("기타");
+    OTHER("기타"),
+
+    ADVERTISEMENTS("광고/도배"),
+
+
+    SPAM_COMMENT("광고/도배성 댓글"),
+    INSULT_HARASSMENT("욕설/비방/괴롭힘"),
+    PORNOGRAPHY("음란/선정성"),
+    PERSONAL_INFO_LEAK("개인정보 노출");
+
+
 
     private final String description;
 

@@ -54,12 +54,16 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<com.example.oops.api.post.domain.Post> posts = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<com.example.oops.api.comment.Comment> comments = new ArrayList<>();
+
 
     public static User of(String encodedPassword,SignRequestDto signRequestDto) {
 
         UserInfo userInfo1 = UserInfo.builder()
                 .nickname(signRequestDto.getNickname())
                 .line(signRequestDto.getLine())
+                .email(signRequestDto.getEmail())
                 .build();
 
         LoginInfo loginInfo1 = LoginInfo.builder()
@@ -78,6 +82,7 @@ public class User implements UserDetails {
     public static User ofOAuth(OAuthAttributes attributes) {
 
         UserInfo userInfo1 = UserInfo.builder()
+                .email(attributes.getSocialId())
                 .nickname(attributes.getName())
                 .line(Line.NONE)
                 .build();

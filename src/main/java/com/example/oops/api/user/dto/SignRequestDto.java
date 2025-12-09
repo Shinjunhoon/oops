@@ -26,5 +26,7 @@ public class SignRequestDto {
     @NotNull
     private String nickname;
 
+    @NotNull
+    private String email;
 
 }

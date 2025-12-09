@@ -34,7 +34,7 @@ public class VoteService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new OopsException(ErrorCode.USER_NOT_FOUND));
 
-        if(post.getBoardType() != BoardType.DISCUSSION){
+        if(post.getBoardType() != BoardType.DISCUSSION && post.getBoardType() != BoardType.MAD) {
             throw new OopsException(ErrorCode.INVALID_VOTE_BOARD);
         }
 
