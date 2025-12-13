@@ -15,7 +15,7 @@ import java.util.Collections;
 
 @Configuration
 public class AdminInitializer {
-    private static final String ADMIN_USERNAME = "admin";
+    private static final String ADMIN_USERNAME = "운영자";
     private static final String REGULAR_USERNAME = "user";
     private static final String REGULAR_USERNAME2 = "user2";
     private static final String REGULAR_USERNAME3 = "user3";

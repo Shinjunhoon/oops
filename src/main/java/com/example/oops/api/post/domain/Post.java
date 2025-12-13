@@ -4,8 +4,8 @@ package com.example.oops.api.post.domain;
 import com.example.oops.api.comment.Comment;
 import com.example.oops.api.post.domain.enums.BoardType;
 import com.example.oops.api.post.domain.enums.Champion;
+import com.example.oops.api.post.domain.enums.GameCategory;
 import com.example.oops.api.post.domain.enums.Tier;
-import com.example.oops.api.post.dtos.DesPostListTopFive.PostFiveResponseDto;
 import com.example.oops.api.post.dtos.DiscussionResponseDto;
 import com.example.oops.api.post.dtos.GeneralPostResponseDto;
 import com.example.oops.api.post.dtos.MadMovieResponseDto;
@@ -49,6 +49,10 @@ public class Post {
 
     @Enumerated(EnumType.STRING)
     private Tier tier;
+
+
+    @Enumerated(EnumType.STRING)
+    private GameCategory game;
 
 
     @Column(length = 500)
@@ -161,6 +165,9 @@ public class Post {
                 this.user.getId(),
                 this.isNotice
         );
+    }
+    public void increaseViewCount() {
+        this.viewCount++;
     }
 
 }

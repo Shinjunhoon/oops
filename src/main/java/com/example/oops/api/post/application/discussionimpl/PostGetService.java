@@ -1,8 +1,11 @@
 package com.example.oops.api.post.application.discussionimpl;
 
+import com.example.oops.api.ViewLog.ViewLogRepository;
 import com.example.oops.api.comment.CommentResponseDto;
 import com.example.oops.api.post.domain.Post;
+import com.example.oops.api.post.domain.ViewLog;
 import com.example.oops.api.post.domain.enums.BoardType;
+import com.example.oops.api.post.domain.enums.GameCategory;
 import com.example.oops.api.post.dtos.*;
 import com.example.oops.api.post.dtos.DesPostListTopFive.PostFiveResponseDto;
 import com.example.oops.api.post.dtos.discussionDto.DiscussionListResponseDto;
@@ -32,8 +35,9 @@ import java.util.stream.Collectors;
 public class PostGetService implements com.example.oops.api.post.application.PostGetService {
 
     private final PostRepository postRepository;
+    private final ViewLogRepository viewLogRepository;
 
-    public Page<?> getPostList(BoardType boardType, Pageable pageable) {
+    public Page<?> getPostList(BoardType boardType, GameCategory gameCategory ,Pageable pageable) {
 
         // 1. BoardType에 따른 분기 처리
         if (boardType == BoardType.DISCUSSION) {
@@ -62,11 +66,25 @@ public class PostGetService implements com.example.oops.api.post.application.Pos
 
             // 2-1. 매드무비 전용 Repository 메서드 호출 (챔피언 정보 제외)
             // 이 메서드는 MadMovieListResponseDto를 반환합니다.
-            Page<MadMovieListResponseDto> madMoviePage = postRepository.findMadMovieListByBoardType(boardType, pageable);
+            Page<MadMovieListResponseDto> madMoviePage = postRepository.findMadMovieListByBoardTypeAndCategory(boardType,gameCategory, pageable);
 
-            // 2-2. 매드무비는 챔피언 한글 이름 설정 로직이 필요 없습니다.
 
-            return madMoviePage;
+
+            Page<MadMovieListResponseDto> madMoviePageWithComments = madMoviePage.map(postDto -> {
+                // 댓글 DTO 변환
+                List<CommentResponseDto> commentResponseDtos = postDto.getId() != null ?
+                        postRepository.findById(postDto.getId())
+                                .map(Post::getComments)
+                                .orElse(List.of())
+                                .stream()
+                                .map(CommentResponseDto::of)
+                                .toList()
+                        : List.of();
+
+                postDto.setComments(commentResponseDtos);
+                return postDto;
+            });
+            return madMoviePageWithComments;
 
         } else if (boardType == BoardType.FREE) { // 📢 자유 게시판 로직 추가
 
@@ -171,17 +189,54 @@ public class PostGetService implements com.example.oops.api.post.application.Pos
     }
 
     @Override
-    public List<MadMovieListResponseDto> getMonthlyPopularMadmoviePosts() {
+    public List<MadMovieListResponseDto> getMonthlyPopularMadmoviePosts(GameCategory gameCategory) {
+        Pageable top3 = PageRequest.of(0, 3);
         // 1. 이번 달의 첫 날을 계산 (로직 동일)
         LocalDateTime startOfMonth = LocalDateTime.now()
                 .with(TemporalAdjusters.firstDayOfMonth())
                 .toLocalDate().atStartOfDay();
 
         // 2. DTO를 반환하는 리포지토리 메서드 호출
-        return postRepository.findTop5MonthlyPopularMadmovieDtos(BoardType.MAD, startOfMonth);
+        return postRepository.findTopMonthlyPopularMadmovieDtos(gameCategory,BoardType.MAD, startOfMonth,top3);
     }
 
     public List<PostFiveResponseDto> getPostDesList(BoardType boardType) {
         return postRepository.findTop5ByBoardTypeOrderByCreatedAtDesc(boardType, PageRequest.of(0, 5));
     }
+
+
+    @Transactional
+    public void incrementViewCount(Long postId, String userIdentifier, long timeLimitMinutes) {
+        // 1. 중복 확인을 위한 시간 제한 설정
+        LocalDateTime timeLimit = LocalDateTime.now().minusMinutes(timeLimitMinutes);
+
+        // 2. ViewLog에서 최근 기록이 있는지 확인
+        boolean hasRecentView = viewLogRepository.existsByPostIdAndUserIdentifierAndRecordedAtAfter(
+                postId,
+                userIdentifier,
+                timeLimit
+        );
+
+
+        if (!hasRecentView) {
+            // 3. 중복이 아닌 경우:
+
+            // Post 엔티티를 로드
+            Post post = postRepository.findById(postId)
+                    .orElseThrow(() -> new IllegalArgumentException("Post not found with ID: " + postId));
+
+            // a. Post 엔티티의 조회수 증가 (Post 엔티티에 메서드를 추가해야 함)
+            postRepository.incrementViewCount(postId);
+
+            // b. ViewLog 기록 추가
+            ViewLog newLog = ViewLog.create(post, userIdentifier);
+            viewLogRepository.save(newLog);
+
+            // postRepository.save(post); // @Transactional 덕분에 자동 반영되지만 명시적으로 호출 가능
+        }
+        // 중복인 경우 (hasRecentView == true)는 아무 작업도 하지 않고 종료됩니다.
+    }
+
+
+
 }

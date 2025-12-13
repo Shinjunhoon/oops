@@ -2,6 +2,7 @@ package com.example.oops.api.post.repository;
 
 import com.example.oops.api.post.domain.Post;
 import com.example.oops.api.post.domain.enums.BoardType;
+import com.example.oops.api.post.domain.enums.GameCategory;
 import com.example.oops.api.post.dtos.DesPostListTopFive.PostFiveResponseDto;
 import com.example.oops.api.post.dtos.MadMovieListResponseDto;
 import com.example.oops.api.post.dtos.PostListResponseDto;
@@ -42,16 +43,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     List<Post> findByUserId(Long userId);
 
-    @Query(value = "SELECT new com.example.oops.api.post.dtos.MadMovieListResponseDto(" +
-            "p.id, p.title, p.upVoteCount, p.downVoteCount, p.createdAt, p.viewCount, p.user.userInfo.nickname, p.isNotice) " +
-            "FROM Post p " +
-            "WHERE p.boardType = :boardType " +
-            "ORDER BY p.isNotice DESC, p.createdAt DESC",
-            countQuery = "SELECT count(p) FROM Post p WHERE p.boardType = :boardType")
-    Page<MadMovieListResponseDto> findMadMovieListByBoardType(@Param("boardType") BoardType boardType, Pageable pageable);
-
-
-
     @Query(value = "SELECT new com.example.oops.api.post.dtos.PostListResponseDto(p.id, p.title,p.createdAt,p.user.userInfo.nickname,p.viewCount,p.isNotice) " +
             "FROM Post p " +
             "WHERE p.boardType = :boardType " +
@@ -62,20 +53,44 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
 
     @Query(value = "SELECT new com.example.oops.api.post.dtos.MadMovieListResponseDto(" +
-            "p.id, p.title, p.upVoteCount, p.downVoteCount, p.createdAt, p.viewCount,p.user.userInfo.nickname,p.isNotice ) " +
+            "p.id, p.title, p.game,p.content, p.upVoteCount, p.downVoteCount, p.createdAt, p.viewCount, p.user.userInfo.nickname, p.isNotice, p.imageUrl,p.user.id) " +
             "FROM Post p " +
             "WHERE p.boardType = :boardType " +
             "AND p.createdAt >= :startOfMonth " +
             "AND p.upVoteCount > 0 " +
+            "AND (:category = 'ALL' OR p.game = :category) " +
             "ORDER BY p.upVoteCount DESC, p.id DESC",
             countQuery = "SELECT count(p) FROM Post p " +
                     "WHERE p.boardType = :boardType " +
                     "AND p.createdAt >= :startOfMonth " +
-                    "AND p.upVoteCount > 0")
-    List<MadMovieListResponseDto> findTop5MonthlyPopularMadmovieDtos(
+                    "AND p.upVoteCount > 0 " +
+                    "AND (:category = 'ALL' OR p.game = :category)")
+    List<MadMovieListResponseDto> findTopMonthlyPopularMadmovieDtos(
+            @Param("category") GameCategory category,
             @Param("boardType") BoardType boardType,
-            @Param("startOfMonth") LocalDateTime startOfMonth
+            @Param("startOfMonth") LocalDateTime startOfMonth,
+            Pageable pageable
     );
+
+
+    @Query(
+            value = "SELECT new com.example.oops.api.post.dtos.MadMovieListResponseDto(" +
+                    "p.id, p.title,p.game, p.content, p.upVoteCount, p.downVoteCount, p.createdAt, " +
+                    "p.viewCount, p.user.userInfo.nickname, p.isNotice, p.imageUrl,p.user.id) " +
+                    "FROM Post p " +
+                    "WHERE p.boardType = :boardType " +
+                    "  AND (:category = 'ALL' OR p.game = :category) " +
+                    "ORDER BY p.isNotice DESC, p.createdAt DESC",
+            countQuery = "SELECT count(p) FROM Post p " +
+                    "WHERE p.boardType = :boardType " +
+                    "  AND (:category = 'ALL' OR p.game = :category)"
+    )
+    Page<MadMovieListResponseDto> findMadMovieListByBoardTypeAndCategory(
+            @Param("boardType") BoardType boardType,
+            @Param("category") GameCategory category,
+            Pageable pageable
+    );
+
 
     @Modifying
     @Query("UPDATE Post p SET p.viewCount = p.viewCount + 1 WHERE p.id = :postId")

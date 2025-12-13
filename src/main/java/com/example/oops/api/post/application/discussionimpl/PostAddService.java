@@ -93,6 +93,7 @@ public class PostAddService implements com.example.oops.api.post.application.Pos
         Post post = Post.builder()
                 .title(madMovieRequestDto.getTitle())
                 .user(user)
+                .game(madMovieRequestDto.getGameCategory())
                 .content(madMovieRequestDto.getContent())
                 .boardType(madMovieRequestDto.getBoardType())
                 .imageUrl(videoUrlToSave) // videoUrlToSave 변수 사용

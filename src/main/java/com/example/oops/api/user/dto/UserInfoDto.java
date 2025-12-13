@@ -11,12 +11,14 @@ import lombok.NoArgsConstructor;
 public class UserInfoDto {
     private Long id;
     String nickname;
+    String email;
     Line line;
 
 
     public UserInfoDto(UserInfo userInfo,Long id) {
         nickname = userInfo.getNickname();
         line = userInfo.getLine();
+        email = userInfo.getEmail();
         this.id = id;
     }
 }

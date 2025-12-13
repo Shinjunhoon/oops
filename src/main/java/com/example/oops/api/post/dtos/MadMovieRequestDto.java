@@ -1,6 +1,7 @@
 package com.example.oops.api.post.dtos;
 
 import com.example.oops.api.post.domain.enums.BoardType;
+import com.example.oops.api.post.domain.enums.GameCategory;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -11,4 +12,5 @@ public class MadMovieRequestDto {
     private String videoUrl;
     private BoardType boardType;
     private String content;
+    private GameCategory gameCategory;
 }

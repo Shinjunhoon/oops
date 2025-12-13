@@ -82,7 +82,7 @@ public class User implements UserDetails {
     public static User ofOAuth(OAuthAttributes attributes) {
 
         UserInfo userInfo1 = UserInfo.builder()
-                .email(attributes.getSocialId())
+                .email(attributes.getEmail())
                 .nickname(attributes.getName())
                 .line(Line.NONE)
                 .build();
