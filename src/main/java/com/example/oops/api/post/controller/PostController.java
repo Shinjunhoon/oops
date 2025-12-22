@@ -51,6 +51,12 @@ public class PostController {
         return ApiResponseEntity.successResponseEntity(postService.saveMadMovePost(jwtTokenProvider.getLoginId(authentication), madMovieRequestDto,file));
     }
 
+    @GetMapping("/getGHotDisPost/{boardType}")
+    public ResponseEntity<ApiResponseEntity> getGHotDisPost(@PathVariable BoardType boardType){
+        return ApiResponseEntity.successResponseEntity(postGetService.getHotDiscussionPost(boardType));
+    }
+
+
     @PostMapping("/freePost")
     public ResponseEntity<ApiResponseEntity> createFreePost(@RequestPart("dto") @Valid FreePostRequestDto madMovieRequestDto, Authentication authentication, @RequestPart(value = "file", required = false) MultipartFile file) throws IOException {
         return ApiResponseEntity.successResponseEntity(postService.saveFreePost(jwtTokenProvider.getLoginId(authentication), madMovieRequestDto,file));
@@ -101,7 +107,6 @@ public class PostController {
     ) {
         Long postId = requestDto.getPostId();
         String userIdentifier;
-
         // 1. JWT 기반 로그인 사용자 식별
         if (user != null) {
             // 🚨 로그인 사용자: User ID를 식별자로 사용 (예: "USER_123")
@@ -112,13 +117,10 @@ public class PostController {
             // 로드 밸런서가 없으므로 getRemoteAddr() 사용
             userIdentifier = "IP_" + request.getRemoteAddr();
         }
-
         // 🚨 디버깅/로그 목적으로 식별자 확인
         System.out.println("View Count Request received. Identifier: " + userIdentifier);
-
         // 3. 조회수 증가 서비스 호출 (60분 제한)
         postGetService.incrementViewCount(postId, userIdentifier, 10L);
-
         return ResponseEntity.ok().build();
     }
 }

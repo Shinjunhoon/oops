@@ -154,4 +154,18 @@ public class RiotApiService {
 
         return applyRetryLogic(responseMono);
     }
+
+    public Mono<Integer> getChampionIdByPuuid(String puuid) {
+        String path = String.format(
+                "/lol/champion-mastery/v4/champion-masteries/by-puuid/%s",
+                puuid
+        );
+
+        Mono<List<ChampionMasteryDTO>> responseMono =
+                createResponseMono(krWebClient, path,
+                        new ParameterizedTypeReference<List<ChampionMasteryDTO>>() {});
+
+        return applyRetryLogic(responseMono)
+                .map(list -> list.get(0).getChampionId()); // 가장 많이 한 챔피언
+    }
 }

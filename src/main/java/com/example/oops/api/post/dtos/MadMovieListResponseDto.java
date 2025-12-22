@@ -19,8 +19,7 @@ public class MadMovieListResponseDto {
     private String title;
     private String gameCategory;
     private String content;
-    private int upVote;
-    private int downVote;
+    private int like;
     private LocalDateTime createdOn;
     private int viewCount;
     private String userName;
@@ -30,14 +29,13 @@ public class MadMovieListResponseDto {
     List<CommentResponseDto> comments;
 
     public MadMovieListResponseDto(Long id, String title, GameCategory gameCategory, String content,
-                                   int upVote, int downVote, LocalDateTime createdOn, int viewCount,
+                                   int like, LocalDateTime createdOn, int viewCount,
                                    String userName, Boolean isNotice, String videoUrl,Long userId) {
         this.id = id;
         this.title = title;
         this.gameCategory = gameCategory.getMessage(); // 한국어 메시지 사용
         this.content = content;
-        this.upVote = upVote;
-        this.downVote = downVote;
+        this.like = like;
         this.createdOn = createdOn;
         this.viewCount = viewCount;
         this.userName = userName;

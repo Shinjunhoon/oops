@@ -60,6 +60,4 @@ public class VoteService {
         }
         return "성공";
     }
-
-
 }

@@ -30,6 +30,20 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             countQuery = "SELECT count(p) FROM Post p WHERE p.boardType = :boardType")
     Page<DiscussionListResponseDto> findByBoardType(BoardType boardType, Pageable pageable);
 
+    @Query(
+            value = "SELECT new com.example.oops.api.post.dtos.discussionDto.DiscussionListResponseDto(" +
+                    "p.id, p.title, p.upVoteCount, p.downVoteCount, p.createdAt, " +
+                    "p.champion1, p.champion2, p.tier, p.viewCount, p.isNotice) " +
+                    "FROM Post p " +
+                    "WHERE p.boardType = :boardType " +
+                    "ORDER BY (p.upVoteCount + p.downVoteCount) DESC",
+            countQuery = "SELECT count(p) FROM Post p WHERE p.boardType = :boardType"
+    )
+    Page<DiscussionListResponseDto> findTopVotedPost(
+            @Param("boardType") BoardType boardType,
+            Pageable pageable
+    );
+
 
     Optional<Post> findByBoardTypeAndId(BoardType boardType, Long id);
 
@@ -53,7 +67,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
 
     @Query(value = "SELECT new com.example.oops.api.post.dtos.MadMovieListResponseDto(" +
-            "p.id, p.title, p.game,p.content, p.upVoteCount, p.downVoteCount, p.createdAt, p.viewCount, p.user.userInfo.nickname, p.isNotice, p.imageUrl,p.user.id) " +
+            "p.id, p.title, p.game,p.content, p.likeCount, p.createdAt, p.viewCount, p.user.userInfo.nickname, p.isNotice, p.imageUrl,p.user.id) " +
             "FROM Post p " +
             "WHERE p.boardType = :boardType " +
             "AND p.createdAt >= :startOfMonth " +
@@ -75,7 +89,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     @Query(
             value = "SELECT new com.example.oops.api.post.dtos.MadMovieListResponseDto(" +
-                    "p.id, p.title,p.game, p.content, p.upVoteCount, p.downVoteCount, p.createdAt, " +
+                    "p.id, p.title,p.game, p.content, p.likeCount, p.createdAt, " +
                     "p.viewCount, p.user.userInfo.nickname, p.isNotice, p.imageUrl,p.user.id) " +
                     "FROM Post p " +
                     "WHERE p.boardType = :boardType " +

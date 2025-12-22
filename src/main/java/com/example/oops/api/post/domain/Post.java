@@ -22,6 +22,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+
+
 @Builder
 @Entity
 @Getter
@@ -88,6 +90,9 @@ public class Post {
 
     private boolean isNotice;
 
+    @Column(name = "like_count")
+    private int likeCount;
+
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, orphanRemoval = true)
     @OrderBy("createAt DESC ")
     private List<Comment> comments = new ArrayList<>();
@@ -108,6 +113,17 @@ public class Post {
             this.downVoteCount--;
         }
     }
+
+    public void uPLike(){
+        this.likeCount++;
+    }
+
+    public void downLike(){
+        if(likeCount>0){
+        this.likeCount--;
+        }
+    }
+
 
     public void updateUpVoteCount(VoteType oldType,VoteType newType) {
         decreaseUpVoteCount(oldType);

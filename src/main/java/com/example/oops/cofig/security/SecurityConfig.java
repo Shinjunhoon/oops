@@ -81,8 +81,9 @@ public class SecurityConfig  {
                         .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
 
                         .requestMatchers("/api/auth/login", "/api/auth/sign", "/api/auth/reissue","/api/post/getDesPost/**","api/post/view-count"
-                        ,"api/auth/refresh","/api/post/get/**","/api/auth/email","/api/auth/emailVerify","api/auth/checkUserName"
-                        ,"/api/post/test","/api/post/get/**","/api/comment/createComment","/api/v1/account/player-details/**","/api/post/get/MovUpList").permitAll()
+                        ,"api/auth/refresh","/api/post/get/**","/api/auth/email","/api/auth/emailVerify","api/auth/checkUserName","api/post/getGHotDisPost/**"
+                        ,"/api/post/test","/api/post/get/**","/api/comment/createComment","/api/v1/account/player-details/**","/api/post/get/MovUpList",
+                                "perf/**").permitAll()
 
 
                         .anyRequest().authenticated()

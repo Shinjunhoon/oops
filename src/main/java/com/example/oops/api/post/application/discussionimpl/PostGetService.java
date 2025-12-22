@@ -1,9 +1,9 @@
 package com.example.oops.api.post.application.discussionimpl;
 
+import com.example.oops.api.ViewLog.ViewLog;
 import com.example.oops.api.ViewLog.ViewLogRepository;
 import com.example.oops.api.comment.CommentResponseDto;
 import com.example.oops.api.post.domain.Post;
-import com.example.oops.api.post.domain.ViewLog;
 import com.example.oops.api.post.domain.enums.BoardType;
 import com.example.oops.api.post.domain.enums.GameCategory;
 import com.example.oops.api.post.dtos.*;
@@ -17,6 +17,7 @@ import com.example.oops.common.error.OopsException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +28,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -207,36 +209,44 @@ public class PostGetService implements com.example.oops.api.post.application.Pos
 
     @Transactional
     public void incrementViewCount(Long postId, String userIdentifier, long timeLimitMinutes) {
-        // 1. 중복 확인을 위한 시간 제한 설정
+        // 1. 제한 시간 계산 (예: 10분 전)
         LocalDateTime timeLimit = LocalDateTime.now().minusMinutes(timeLimitMinutes);
 
-        // 2. ViewLog에서 최근 기록이 있는지 확인
-        boolean hasRecentView = viewLogRepository.existsByPostIdAndUserIdentifierAndRecordedAtAfter(
-                postId,
-                userIdentifier,
-                timeLimit
-        );
+        // 2. Post 엔티티 로드
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("Post not found with ID: " + postId));
 
+        try {
+            // 3. 최근 기록 조회
+            Optional<ViewLog> recentViewOpt = viewLogRepository.findByPostIdAndUserIdentifier(postId, userIdentifier);
 
-        if (!hasRecentView) {
-            // 3. 중복이 아닌 경우:
+            // 4. 기록이 없거나, 최근 10분 이전이면
+            if (recentViewOpt.isEmpty() || recentViewOpt.get().getRecordedAt().isBefore(timeLimit)) {
 
-            // Post 엔티티를 로드
-            Post post = postRepository.findById(postId)
-                    .orElseThrow(() -> new IllegalArgumentException("Post not found with ID: " + postId));
+                // 새 기록 생성 또는 기존 기록 갱신
+                ViewLog log = recentViewOpt.orElse(ViewLog.create(post, userIdentifier));
+                log.setRecordedAt(LocalDateTime.now()); // 갱신
+                viewLogRepository.save(log);
 
-            // a. Post 엔티티의 조회수 증가 (Post 엔티티에 메서드를 추가해야 함)
-            postRepository.incrementViewCount(postId);
+                // 5. 조회수 증가
+                postRepository.incrementViewCount(postId);
+            }
 
-            // b. ViewLog 기록 추가
-            ViewLog newLog = ViewLog.create(post, userIdentifier);
-            viewLogRepository.save(newLog);
-
-            // postRepository.save(post); // @Transactional 덕분에 자동 반영되지만 명시적으로 호출 가능
+        } catch (DataIntegrityViolationException e) {
+            // 동시 요청으로 이미 같은 사용자가 저장했으면 무시
         }
-        // 중복인 경우 (hasRecentView == true)는 아무 작업도 하지 않고 종료됩니다.
     }
 
 
 
+    public DiscussionListResponseDto getHotDiscussionPost(BoardType boardType) {
+
+        PageRequest pageable = PageRequest.of(0, 1);
+
+        return postRepository.findTopVotedPost(boardType, pageable)
+                .getContent()
+                .stream()
+                .findFirst()
+                .orElse(null);
+    }
 }

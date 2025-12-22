@@ -23,4 +23,6 @@ public interface PostGetService {
     public void incrementViewCount(Long postId, String userIdentifier, long timeLimitMinutes);
     public abstract List<PostFiveResponseDto> getPostDesList(BoardType boardType);
 
+    public abstract DiscussionListResponseDto getHotDiscussionPost(BoardType boardType);
+
 }

@@ -11,199 +11,179 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-// DDragon 데이터 로드 및 조회를 담당하는 서비스
 @Service
 @Slf4j
 public class DDragonService {
-    private final WebClient webClient;
-    private final Duration TIMEOUT = Duration.ofSeconds(10); // 로드 타임아웃 설정
 
-    // 현재 롤 게임 버전
+    private final WebClient webClient;
+    private static final Duration TIMEOUT = Duration.ofSeconds(10);
+
+    // 🔥 병렬 / 순차 비교 플래그
+    private static final boolean USE_PARALLEL_LOADING = true;
+
     @Getter
     private String latestVersion;
 
-    // 챔피언 ID -> 영문 이름 캐시 (예: 10 -> "JarvanIV")
     private final Map<String, String> championIdToName = new HashMap<>();
-
-    // 챔피언 영문 이름 -> 이미지 정보 캐시
     private final Map<String, JsonNode> championNameToImage = new HashMap<>();
-
-    // 아이템 ID -> 아이템 정보 캐시
     private final Map<String, JsonNode> itemIdToInfo = new HashMap<>();
-
-    // 소환사 주문 (스펠) ID -> 정보 캐시 (key는 숫자 ID, value는 JsonNode)
     private final Map<String, JsonNode> spellIdToInfo = new HashMap<>();
-
-    // --- 🎯 새로 추가된 부분 (1/3): 룬 ID 캐시 필드 ---
-    // 룬 ID (Int) -> 룬 정보 캐시
     private final Map<Integer, JsonNode> runeIdToInfo = new HashMap<>();
-    // ----------------------------------------------------
 
-
-    public DDragonService(WebClient.Builder webClientBuilder,
-                          @Value("${ddragon.base-url}") String ddragonBaseUrl) {
-
-        // --- 🎯핵심 수정: WebClient의 메모리 버퍼 크기를 5MB로 늘립니다. ---
-        final int MAX_BUFFER_SIZE = 5 * 1024 * 1024; // 5MB
+    public DDragonService(
+            WebClient.Builder webClientBuilder,
+            @Value("${ddragon.base-url}") String ddragonBaseUrl
+    ) {
+        final int MAX_BUFFER_SIZE = 5 * 1024 * 1024;
 
         ExchangeStrategies strategies = ExchangeStrategies.builder()
-                .codecs(clientCodecConfigurer ->
-                        clientCodecConfigurer.defaultCodecs().maxInMemorySize(MAX_BUFFER_SIZE))
+                .codecs(c -> c.defaultCodecs().maxInMemorySize(MAX_BUFFER_SIZE))
                 .build();
 
         this.webClient = webClientBuilder
                 .baseUrl(ddragonBaseUrl)
-                .exchangeStrategies(strategies) // 늘어난 버퍼 설정 적용
+                .exchangeStrategies(strategies)
                 .build();
     }
 
-    /**
-     * Spring 애플리케이션 시작 시 모든 정적 데이터를 동기적으로 로드합니다.
-     * WebClient.block()을 사용하여 데이터 로드가 완료될 때까지 애플리케이션 시작을 대기시킵니다.
-     */
+    /* =========================
+       🔹 Application Startup
+       ========================= */
+
     @PostConstruct
     public void init() {
         log.info("DDragon 데이터 로드 시작...");
+        long start = System.currentTimeMillis();
 
         try {
-            // 1. 최신 버전 동기적으로 가져오기
-            this.latestVersion = getLatestVersion().block(TIMEOUT);
+            latestVersion = getLatestVersion().block(TIMEOUT);
 
-            if (this.latestVersion == null) {
-                throw new IllegalStateException("Failed to retrieve latest DDragon version.");
+            if (latestVersion == null) {
+                throw new IllegalStateException("DDragon version fetch failed");
             }
 
-            // 2. 모든 정적 데이터 동기적으로 로드 (룬 로직 포함)
-            loadAllStaticData(this.latestVersion).block(TIMEOUT);
+            if (USE_PARALLEL_LOADING) {
+                loadAllStaticDataParallel(latestVersion).block(TIMEOUT);
+            } else {
+                loadAllStaticDataSequential(latestVersion).block(TIMEOUT);
+            }
 
-            log.info("DDragon 데이터 로드 완료. Version: {}. Loaded Champions: {}, Items: {}, Spells: {}, Runes: {}",
-                    this.latestVersion, championIdToName.size(), itemIdToInfo.size(), spellIdToInfo.size(), runeIdToInfo.size());
+            long end = System.currentTimeMillis();
+
+            log.info(
+                    "[{}] DDragon Load Complete | Time: {} ms | Champions: {}, Items: {}, Spells: {}, Runes: {}",
+                    USE_PARALLEL_LOADING ? "PARALLEL" : "SEQUENTIAL",
+                    end - start,
+                    championIdToName.size(),
+                    itemIdToInfo.size(),
+                    spellIdToInfo.size(),
+                    runeIdToInfo.size()
+            );
 
         } catch (Exception e) {
-            log.error("DDragon 데이터 로드 실패: 애플리케이션 시작에 영향을 줄 수 있습니다. {}", e.getMessage(), e);
-            // 필요에 따라 초기화 실패 시 시스템 종료 또는 폴백 로직 추가 가능
+            log.error("DDragon 초기화 실패", e);
         }
     }
 
-    private Mono<String> getLatestVersion() {
-        // [0] 번째 인덱스에 최신 버전 정보가 있습니다.
-        return webClient.get().uri("/api/versions.json")
-                .retrieve()
-                .bodyToMono(JsonNode.class)
-                .map(versions -> versions.get(0).asText());
+    /* =========================
+       🔹 Parallel / Sequential
+       ========================= */
+
+    private Mono<Void> loadAllStaticDataParallel(String version) {
+        return Mono.when(
+                loadChampions(version),
+                loadItems(version),
+                loadSpells(version),
+                loadRunes(version)
+        );
     }
 
-    private Mono<Void> loadAllStaticData(String version) {
-        Mono<Void> championMono = loadChampions(version);
-        Mono<Void> itemMono = loadItems(version);
-        Mono<Void> spellMono = loadSpells(version);
+    private Mono<Void> loadAllStaticDataSequential(String version) {
+        return loadChampions(version)
+                .then(loadItems(version))
+                .then(loadSpells(version))
+                .then(loadRunes(version));
+    }
 
-        // --- 🎯 새로 추가된 부분 (2/3): 룬 로드 로직을 병렬 작업에 포함 ---
-        Mono<Void> runeMono = loadRunes(version);
+    /* =========================
+       🔹 API Load Methods
+       ========================= */
 
-        // 모든 로드가 병렬로 완료될 때까지 기다립니다.
-        return Mono.when(championMono, itemMono, spellMono, runeMono);
-        // ------------------------------------------------------------------
+    private Mono<String> getLatestVersion() {
+        return webClient.get()
+                .uri("/api/versions.json")
+                .retrieve()
+                .bodyToMono(JsonNode.class)
+                .map(json -> json.get(0).asText());
     }
 
     private Mono<Void> loadChampions(String version) {
-        return webClient.get().uri(String.format("/cdn/%s/data/ko_KR/champion.json", version))
+        return webClient.get()
+                .uri("/cdn/{v}/data/ko_KR/champion.json", version)
                 .retrieve()
                 .bodyToMono(JsonNode.class)
                 .map(root -> root.get("data"))
-                .doOnNext(data -> {
-                    data.fields().forEachRemaining(entry -> {
-                        String name = entry.getKey();
-                        String id = entry.getValue().get("key").asText();
-
-                        championIdToName.put(id, name);
-                        championNameToImage.put(name, entry.getValue().get("image"));
-                    });
-                })
+                .doOnNext(data ->
+                        data.fields().forEachRemaining(e -> {
+                            String name = e.getKey();
+                            String id = e.getValue().get("key").asText();
+                            championIdToName.put(id, name);
+                            championNameToImage.put(name, e.getValue().get("image"));
+                        })
+                )
                 .then();
     }
 
     private Mono<Void> loadItems(String version) {
-        return webClient.get().uri(String.format("/cdn/%s/data/ko_KR/item.json", version))
+        return webClient.get()
+                .uri("/cdn/{v}/data/ko_KR/item.json", version)
                 .retrieve()
                 .bodyToMono(JsonNode.class)
                 .map(root -> root.get("data"))
-                .doOnNext(data -> {
-                    // "data" 노드 아래의 모든 아이템을 맵에 저장합니다.
-                    data.fields().forEachRemaining(entry -> {
-                        itemIdToInfo.put(entry.getKey(), entry.getValue());
-                    });
-                })
+                .doOnNext(data ->
+                        data.fields().forEachRemaining(e ->
+                                itemIdToInfo.put(e.getKey(), e.getValue()))
+                )
                 .then();
     }
 
     private Mono<Void> loadSpells(String version) {
-        return webClient.get().uri(String.format("/cdn/%s/data/ko_KR/summoner.json", version))
+        return webClient.get()
+                .uri("/cdn/{v}/data/ko_KR/summoner.json", version)
                 .retrieve()
                 .bodyToMono(JsonNode.class)
                 .map(root -> root.get("data"))
-                .doOnNext(data -> {
-                    data.fields().forEachRemaining(entry -> {
-                        // 스펠은 key가 숫자 ID입니다.
-                        String id = entry.getValue().get("key").asText();
-                        spellIdToInfo.put(id, entry.getValue());
-                    });
-                })
+                .doOnNext(data ->
+                        data.fields().forEachRemaining(e -> {
+                            String id = e.getValue().get("key").asText();
+                            spellIdToInfo.put(id, e.getValue());
+                        })
+                )
                 .then();
     }
 
-    // --- 🎯 새로 추가된 부분 (3/3): 룬 데이터 로드 및 파싱 메서드 ---
-
-    /**
-     * 룬 정보를 DDragon에서 가져와 캐시에 저장합니다.
-     * /cdn/{version}/data/ko_KR/runesReforged.json 엔드포인트를 사용합니다.
-     */
     private Mono<Void> loadRunes(String version) {
-        String url = String.format("/cdn/%s/data/ko_KR/runesReforged.json", version);
-
         return webClient.get()
-                .uri(url)
+                .uri("/cdn/{v}/data/ko_KR/runesReforged.json", version)
                 .retrieve()
                 .bodyToMono(JsonNode.class)
                 .timeout(TIMEOUT)
-                .doOnNext(runePaths -> {
-                    // 룬 경로(정밀, 지배 등) 배열을 순회하며 모든 하위 룬의 정보를 Map에 저장합니다.
-                    runePaths.forEach(this::processRunePaths);
-                })
-                .then(); // Void 반환
+                .doOnNext(paths -> paths.forEach(this::processRunePaths))
+                .then();
     }
 
-    /**
-     * DDragon의 룬 경로 배열(JsonNode)을 순회하며 모든 룬 ID와 정보를 Map에 저장합니다.
-     * DDragon의 룬 데이터는 (경로 > 슬롯 > 룬)의 3중 구조로 중첩되어 있어 평탄화가 필요합니다.
-     * @param runePath 정밀, 지배 등 하나의 룬 경로 정보
-     */
     private void processRunePaths(JsonNode runePath) {
+        int styleId = runePath.get("id").asInt();
+        runeIdToInfo.put(styleId, runePath);
 
-        // 🎯 [추가된 핵심 코드] 룬 경로(트리)의 ID와 정보를 맵에 저장합니다.
-        // 이 정보는 '보조 룬 트리'의 이름과 이미지를 조회할 때 사용됩니다.
-        int styleId = runePath.get("id").asInt(); // 8000 (정밀), 8100 (지배) 등
-        runeIdToInfo.put(styleId, runePath); // runePath에는 name 필드(예: "정밀")가 포함되어 있습니다.
-
-        // 룬 경로는 slots 배열을 가집니다. (예: 정밀 룬의 첫 번째 슬롯, 두 번째 슬롯 등)
-        if (runePath.has("slots")) {
-            runePath.get("slots").forEach(slot -> {
-                // 각 슬롯은 runes 배열을 가집니다. (예: 공격력 강화 룬 3가지)
-                if (slot.has("runes")) {
-                    slot.get("runes").forEach(rune -> {
-                        // 룬 ID (int)와 해당 룬의 JsonNode를 맵에 저장합니다.
-                        // 이 정보는 '핵심 룬'의 이름과 이미지를 조회할 때 사용됩니다.
-                        int id = rune.get("id").asInt(); // 8005 (집중 공격) 등
-                        runeIdToInfo.put(id, rune);
-                    });
-                }
-            });
-        }
+        runePath.get("slots").forEach(slot ->
+                slot.get("runes").forEach(rune ->
+                        runeIdToInfo.put(rune.get("id").asInt(), rune))
+        );
     }
 
     // ------------------------------------------------------------------

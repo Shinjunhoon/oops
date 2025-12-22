@@ -40,7 +40,7 @@ public class AdminInitializer {
                         .build();
 
                 UserInfo adminUserInfo = UserInfo.builder()
-//                        .email("admin@gmail.com")
+                        .email("admin@gmail.com")
                         .line(Line.BOTTOM)
                         .nickname(ADMIN_USERNAME)
                         .build();

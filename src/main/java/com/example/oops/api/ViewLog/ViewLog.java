@@ -1,5 +1,6 @@
-package com.example.oops.api.post.domain;
+package com.example.oops.api.ViewLog;
 
+import com.example.oops.api.post.domain.Post;
 import com.example.oops.api.user.domain.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -15,10 +16,15 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 // 🚨 핵심: 복합 유니크 인덱스를 사용하여 DB 레벨에서 중복 카운트를 방지하고 조회 속도를 높입니다.
-@Table(name = "view_log", indexes = {
-        @Index(name = "idx_view_log_post_user_time",
-                columnList = "post_id, user_identifier, recorded_at") // 조회 성능 향상용 인덱스
-})
+@Table(
+        name = "view_log",
+        indexes = {
+                @Index(name = "idx_view_log_post_user_time", columnList = "post_id, user_identifier, recorded_at")
+        },
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"post_id", "user_identifier"})
+        }
+)
 public class ViewLog {
 
     @Id
@@ -34,8 +40,9 @@ public class ViewLog {
     @Column(name = "user_identifier", nullable = false, length = 255)
     private String userIdentifier;
 
+    @Setter
     @CreatedDate
-    @Column(name = "recorded_at", nullable = false, updatable = false)
+    @Column(name = "recorded_at", nullable = false)
     private LocalDateTime recordedAt;
 
     // 편의 메서드
@@ -45,4 +52,5 @@ public class ViewLog {
                 .userIdentifier(userIdentifier)
                 .build();
     }
+
 }

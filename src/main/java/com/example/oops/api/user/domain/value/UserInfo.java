@@ -22,6 +22,7 @@ public class UserInfo {
 
     private String email;
 
+
     public UserInfo updateNickname(String newNickname) {
         return this.toBuilder()
                 .nickname(newNickname)
